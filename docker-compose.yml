@@ -1,0 +1,135 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: gestao-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: gestao_mensalidades_dev
+      POSTGRES_USER: gestao_app_user
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-seu_password_seguro_aqui}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=pt_BR.UTF-8"
+      TZ: America/Sao_Paulo
+    ports:
+      - "54320:5432"  # Porta externa: 54320 (não convencional)
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    networks:
+      - gestao-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gestao_app_user -d gestao_mensalidades_dev"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command: >
+      postgres
+      -c shared_buffers=256MB
+      -c max_connections=200
+      -c effective_cache_size=1GB
+      -c maintenance_work_mem=64MB
+      -c checkpoint_completion_target=0.9
+      -c wal_buffers=16MB
+      -c default_statistics_target=100
+      -c random_page_cost=1.1
+      -c effective_io_concurrency=200
+      -c work_mem=4MB
+      -c min_wal_size=1GB
+      -c max_wal_size=4GB
+
+  # pgAdmin - Gerenciamento Visual do PostgreSQL
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: gestao-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@gestao.local
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin123}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
+    ports:
+      - "8800:80"  # Porta externa: 8800 (não convencional)
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+      - ./docker/pgadmin/servers.json:/pgadmin4/servers.json:ro
+    networks:
+      - gestao-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # Redis - Cache e Sessões (Opcional, mas recomendado)
+  redis:
+    image: redis:7-alpine
+    container_name: gestao-redis
+    restart: unless-stopped
+    ports:
+      - "63790:6379"  # Porta externa: 63790 (não convencional)
+    volumes:
+      - redis_data:/data
+    networks:
+      - gestao-network
+    command: >
+      redis-server
+      --appendonly yes
+      --requirepass ${REDIS_PASSWORD:-redis_password_seguro}
+      --maxmemory 256mb
+      --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  # Aplicação Spring Boot (comentado - descomente quando estiver pronto)
+  # app:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   container_name: gestao-api
+  #   restart: unless-stopped
+  #   environment:
+  #     SPRING_PROFILES_ACTIVE: prod
+  #     DB_HOST: postgres
+  #     DB_PORT: 5432
+  #     DB_NAME: gestao_mensalidades_dev
+  #     DB_USER: gestao_app_user
+  #     DB_PASSWORD: ${DB_PASSWORD}
+  #     JWT_SECRET: ${JWT_SECRET}
+  #     STRIPE_API_KEY: ${STRIPE_API_KEY}
+  #     STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
+  #     REDIS_HOST: redis
+  #     REDIS_PORT: 6379
+  #     REDIS_PASSWORD: ${REDIS_PASSWORD}
+  #   ports:
+  #     - "8800:8080"  # Porta externa: 8800 (não convencional)
+  #   networks:
+  #     - gestao-network
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #     redis:
+  #       condition: service_healthy
+  #   healthcheck:
+  #     test: ["CMD", "curl", "-f", "http://localhost:8080/api/actuator/health"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
+  #     start_period: 60s
+
+networks:
+  gestao-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.25.0.0/16
+
+volumes:
+  postgres_data:
+    driver: local
+  pgadmin_data:
+    driver: local
+  redis_data:
+    driver: local
