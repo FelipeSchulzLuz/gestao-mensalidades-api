@@ -142,6 +142,19 @@ docker compose restart
 
 ## 🌐 Acesso aos Serviços
 
+### 🔌 Mapeamento de Portas
+
+Este projeto usa **portas não convencionais** para evitar conflitos com outros serviços que você possa ter rodando localmente.
+
+| Serviço       | Porta Padrão | Porta Usada | Motivo                                    |
+|---------------|--------------|-------------|-------------------------------------------|
+| **PostgreSQL**| 5432         | **54320**   | Evitar conflito com PostgreSQL local      |
+| **pgAdmin**   | 5050/80      | **8800**    | Evitar conflito com outros serviços web   |
+| **Redis**     | 6379         | **63790**   | Evitar conflito com Redis local           |
+| **API**       | 8080         | **8800**    | Evitar conflito com outras APIs           |
+
+**⚠️ Importante:** A porta ANTES dos `:` no `docker-compose.yml` é a porta **externa** (host), e a porta DEPOIS dos `:` é a porta **interna** (container). Containers se comunicam pelas portas internas.
+
 ### PostgreSQL
 
 ```yaml
@@ -204,6 +217,47 @@ docker compose exec redis redis-cli -a redis_password_seguro ping
 URL: http://localhost:8800/api
 Health Check: http://localhost:8800/api/actuator/health
 Swagger: http://localhost:8800/api/swagger-ui.html
+```
+
+### 🔄 Como Mudar as Portas
+
+Se precisar usar portas diferentes, edite o arquivo `docker-compose.yml`:
+
+```yaml
+services:
+  postgres:
+    ports:
+      - "SUA_PORTA_EXTERNA:5432"  # Exemplo: "5433:5432"
+  
+  pgadmin:
+    ports:
+      - "SUA_PORTA_EXTERNA:80"    # Exemplo: "8801:80"
+  
+  redis:
+    ports:
+      - "SUA_PORTA_EXTERNA:6379"  # Exemplo: "6380:6379"
+  
+  app:
+    ports:
+      - "SUA_PORTA_EXTERNA:8080"  # Exemplo: "8801:8080"
+```
+
+**Lembre-se:** Após mudar portas, atualize também as variáveis de ambiente no `.env` e nos scripts.
+
+### 🔍 Verificar Portas em Uso
+
+```powershell
+# Windows - Ver todas as portas em uso
+netstat -an | Select-String "LISTENING"
+
+# Verificar porta específica
+netstat -an | Select-String "54320"
+```
+
+```bash
+# Linux/Mac
+lsof -i :54320
+netstat -tuln | grep 54320
 ```
 
 ---

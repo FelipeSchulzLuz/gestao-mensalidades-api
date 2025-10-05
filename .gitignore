@@ -46,6 +46,10 @@ out/
 # Credenciais (NUNCA COMMITAR!)
 CREDENCIAIS.md
 
+# Documentos temporários (caso sejam recriados)
+RESUMO_*.md
+CONFIGURACAO_VARIAVEIS_AMBIENTE.md
+
 ### Secrets and Sensitive Data ###
 application-local.yml
 application-local.properties
