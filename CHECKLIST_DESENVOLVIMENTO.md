@@ -5,7 +5,7 @@
 ```
 Fase 1: Setup do Projeto           ████████████████████ 100% ✅
 Fase 2: Banco de Dados              ████████████████████ 100% ✅
-Fase 3: Autenticação                ░░░░░░░░░░░░░░░░░░░░   0% 🔜
+Fase 3: Autenticação & Security     ████████████████████ 100% ✅
 Fase 4: Integração Stripe Base      ░░░░░░░░░░░░░░░░░░░░   0% 🔜
 Fase 5: Módulo Auth (/auth)         ░░░░░░░░░░░░░░░░░░░░   0% 
 Fase 6: Módulo Usuários             ░░░░░░░░░░░░░░░░░░░░   0% 
@@ -15,16 +15,16 @@ Fase 9: Portal do Cliente           ░░░░░░░░░░░░░░�
 Fase 10: Webhooks (CRÍTICO)         ░░░░░░░░░░░░░░░░░░░░   0% 
 Fase 11: Tratamento de Erros        ░░░░░░░░░░░░░░░░░░░░   0% 
 Fase 12: Testes                     ░░░░░░░░░░░░░░░░░░░░   0% 
-Fase 13: Documentação               ██████░░░░░░░░░░░░░░  30% 🚧
+Fase 13: Documentação               ███████░░░░░░░░░░░░░  35% 🚧
 Fase 14: Produção                   ░░░░░░░░░░░░░░░░░░░░   0% 
 
-Progresso Total: 14.3% (2/14 fases)
+Progresso Total: 21.4% (3/14 fases)
 ```
 
 ## 🎯 Próximos Passos Recomendados
 
-1. **Fase 3**: Implementar Spring Security + JWT (fundação para autenticação)
-2. **Fase 4**: Configurar Stripe SDK e serviços base
+1. ✅ **Fase 3**: ~~Implementar Spring Security + JWT~~ **COMPLETO!**
+2. **Fase 4**: Configurar Stripe SDK e serviços base ← **PRÓXIMO**
 3. **Fase 7**: **CRÍTICO** - Implementar gerenciamento de planos (admin + público + sincronização)
 4. **Fase 10**: **CRÍTICO** - Implementar webhooks (assinaturas + sincronização de planos)
 
@@ -228,36 +228,84 @@ Este checklist detalha todos os passos necessários para desenvolver o sistema d
 
 ## ✅ FASE 3: SISTEMA DE AUTENTICAÇÃO E SEGURANÇA
 
-### 3.1 Spring Security Configuration
-- [ ] Criar classe `SecurityConfig extends WebSecurityConfigurerAdapter`
-- [ ] Configurar CORS apropriadamente
-- [ ] Desabilitar CSRF para webhook endpoint
-- [ ] Configurar filtros de autenticação JWT
-- [ ] Definir rotas públicas vs protegidas
+### 🎉 FASE COMPLETA - 2025-10-05
+
+**Commit:** 14 commits criados (Conventional Commits pattern)  
+**Arquivos:** 19 arquivos criados (domain, application, infrastructure, presentation)  
+**Build:** ✅ Compilação successful com Java 21
+
+### 3.1 Spring Security Configuration ✅
+- [x] Criar classe `SecurityConfig` (moderna - sem WebSecurityConfigurerAdapter) ✅
+- [x] Configurar CORS dinamicamente (application.yml) ✅
+- [x] Desabilitar CSRF (stateless JWT) ✅
+- [x] Configurar filtros de autenticação JWT ✅
+- [x] Definir rotas públicas vs protegidas ✅
   ```java
-  Públicas: /auth/**, /plans, /webhooks/stripe
-  Protegidas: /users/**, /subscriptions/**
+  Públicas: /api/auth/**, /api/plans (GET), /api/webhooks/stripe
+  Protegidas: /api/** (todas as outras)
+  Admin: /api/admin/** (ROLE_ADMIN)
   ```
 
-### 3.2 JWT Implementation
-- [ ] Criar `JwtTokenProvider` para geração e validação de tokens
-  - `generateToken(UserDetails userDetails)`
-  - `validateToken(String token)`
-  - `getUsernameFromToken(String token)`
-- [ ] Configurar secret key via variável de ambiente
-- [ ] Definir tempo de expiração do token (ex: 24h)
-- [ ] Criar filtro `JwtAuthenticationFilter`
+### 3.2 JWT Implementation ✅
+- [x] Criar `JwtTokenProvider` para geração e validação de tokens ✅
+  - `generateToken(User user)` ✅
+  - `validateToken(String token)` ✅
+  - `getUserIdFromToken(String token)` ✅
+  - `getEmailFromToken(String token)` ✅
+- [x] Configurar secret key via .env (512-bit HS512) ✅
+- [x] Definir tempo de expiração do token (24h) ✅
+- [x] Criar filtro `JwtAuthenticationFilter` (OncePerRequestFilter) ✅
+- [x] Usar JJWT 0.12.5 (parser(), verifyWith() API) ✅
 
-### 3.3 Password Hashing
-- [ ] Configurar BCryptPasswordEncoder bean
-- [ ] Implementar hash de senha no registro
-- [ ] Força mínima da senha: 8 caracteres
-- [ ] Adicionar validação de complexidade de senha
+### 3.3 Password Hashing ✅
+- [x] Configurar BCryptPasswordEncoder bean ✅
+- [x] Implementar hash de senha no registro ✅
+- [x] Força mínima da senha: 8 caracteres (@Size validation) ✅
+- [x] Validação via Jakarta Bean Validation ✅
 
-### 3.4 User Details Service
-- [ ] Implementar `CustomUserDetailsService implements UserDetailsService`
-- [ ] Carregar usuário por email
-- [ ] Mapear roles/authorities se necessário
+### 3.4 User Details Service ✅
+- [x] Implementar `CustomUserDetailsService implements UserDetailsService` ✅
+- [x] Carregar usuário por email ou ID ✅
+- [x] Mapear UserRole enum → authorities (ROLE_USER, ROLE_ADMIN) ✅
+
+### 3.5 Domain Layer ✅
+- [x] `UserRole` enum (USER, ADMIN) com getAuthority() ✅
+- [x] `InvalidCredentialsException` (401) ✅
+- [x] `UserAlreadyExistsException` (409) ✅
+- [x] `UserNotFoundException` (404) ✅
+- [x] User entity refatorada (String role → UserRole enum) ✅
+
+### 3.6 Application Layer ✅
+- [x] `UserRepositoryPort` (hexagonal architecture) ✅
+- [x] `RegisterRequestDTO` (name, email, password + validation) ✅
+- [x] `LoginRequestDTO` (email, password) ✅
+- [x] `AuthResponseDTO` (accessToken, tokenType, expiresIn) ✅
+- [x] `RegisterUserUseCase` (email check, BCrypt, JWT) ✅
+- [x] `LoginUseCase` (AuthenticationManager, JWT) ✅
+
+### 3.7 Presentation Layer ✅
+- [x] `AuthController` (POST /api/auth/register, /api/auth/login) ✅
+- [x] `GlobalExceptionHandler` (@RestControllerAdvice) ✅
+  - UserAlreadyExistsException → 409 ✅
+  - InvalidCredentialsException → 401 ✅
+  - UserNotFoundException → 404 ✅
+  - MethodArgumentNotValidException → 400 (field errors) ✅
+  - Exception → 500 ✅
+
+### 3.8 Infrastructure ✅
+- [x] `JwtAuthenticationEntryPoint` (JSON 401 responses) ✅
+- [x] `UserRepositoryAdapter` (implements UserRepositoryPort) ✅
+- [x] Gradle auto-download Java 21 (foojay-resolver-convention) ✅
+- [x] Docker network conflict resolvido (172.28.0.0/16) ✅
+
+### 3.9 Testes Pendentes ⏳
+- [ ] Testar POST /api/auth/register (201 Created)
+- [ ] Testar POST /api/auth/login (200 OK + JWT)
+- [ ] Testar rota protegida com token (200 OK)
+- [ ] Testar rota protegida sem token (401)
+- [ ] Testar rota admin sem ROLE_ADMIN (403)
+
+**Nota:** Docker precisa estar rodando em 192.168.1.12 para testes
 
 ---
 
@@ -305,49 +353,56 @@ Este checklist detalha todos os passos necessários para desenvolver o sistema d
 
 ## ✅ FASE 5: MÓDULO DE AUTENTICAÇÃO (/auth)
 
-### 5.1 DTOs
-- [ ] Criar `RegisterRequestDTO`
+### ⚠️ NOTA: Esta fase foi consolidada na Fase 3
+
+A Fase 3 já implementou todo o módulo de autenticação seguindo Clean Architecture.
+
+### 5.1 DTOs ✅
+- [x] Criar `RegisterRequestDTO` ✅
   ```java
   - name (@NotBlank)
   - email (@Email)
   - password (@Size(min=8))
   ```
-- [ ] Criar `LoginRequestDTO`
+- [x] Criar `LoginRequestDTO` ✅
   ```java
   - email (@Email)
   - password (@NotBlank)
   ```
-- [ ] Criar `AuthResponseDTO`
+- [x] Criar `AuthResponseDTO` ✅
   ```java
   - accessToken
   - tokenType (Bearer)
-  - expiresIn
+  - expiresIn (24h)
   ```
 
-### 5.2 Service Layer
-- [ ] Criar `AuthService`
-  - `AuthResponseDTO register(RegisterRequestDTO)`
-    - Validar se email já existe
-    - Hash da senha
-    - Criar Customer no Stripe
-    - Salvar User com stripeCustomerId
-    - Gerar JWT token
-  - `AuthResponseDTO login(LoginRequestDTO)`
-    - Validar credenciais
-    - Gerar JWT token
+### 5.2 Use Cases Layer ✅ (Clean Architecture)
+- [x] Criar `RegisterUserUseCase` ✅
+  - `execute(RegisterRequestDTO)` → AuthResponseDTO
+    - ✅ Validar se email já existe (UserRepositoryPort)
+    - ✅ Hash da senha (BCryptPasswordEncoder)
+    - ⏳ Criar Customer no Stripe (Fase 4)
+    - ✅ Salvar User (com role USER por padrão)
+    - ✅ Gerar JWT token (JwtTokenProvider)
+  - [x] Criar `LoginUseCase` ✅
+  - `execute(LoginRequestDTO)` → AuthResponseDTO
+    - ✅ Validar credenciais (AuthenticationManager)
+    - ✅ Gerar JWT token
 
-### 5.3 Controller
-- [ ] Criar `AuthController`
-  - `POST /auth/register`
+### 5.3 Controller ✅
+- [x] Criar `AuthController` ✅
+  - `POST /api/auth/register`
     - Input: RegisterRequestDTO
     - Output: 201 Created + AuthResponseDTO
-    - Validações: email único, senha forte
-  - `POST /auth/login`
+    - ✅ Validações: email único, senha forte
+    - ✅ Exception: UserAlreadyExistsException (409)
+  - `POST /api/auth/login`
     - Input: LoginRequestDTO
     - Output: 200 OK + AuthResponseDTO
-    - Validações: credenciais corretas
+    - ✅ Validações: credenciais corretas
+    - ✅ Exception: InvalidCredentialsException (401)
 
-### 5.4 Testes
+### 5.4 Testes ⏳
 - [ ] Testar registro com dados válidos
 - [ ] Testar registro com email duplicado
 - [ ] Testar login com credenciais válidas
