@@ -1,5 +1,6 @@
 package br.com.gestaomensalidades.gestao_mensalidades_api.domain.entities;
 
+import br.com.gestaomensalidades.gestao_mensalidades_api.domain.enums.UserRole;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -66,9 +67,10 @@ public class User {
     /**
      * Role/Perfil do usuário (USER, ADMIN)
      */
-    @Column(length = 20)
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20, nullable = false)
     @Builder.Default
-    private String role = "USER";
+    private UserRole role = UserRole.USER;
     
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -83,7 +85,15 @@ public class User {
      * @return true se for admin
      */
     public boolean isAdmin() {
-        return "ADMIN".equalsIgnoreCase(this.role);
+        return UserRole.ADMIN.equals(this.role);
+    }
+    
+    /**
+     * Define se o usuário está ativo
+     * @param active true para ativar, false para desativar
+     */
+    public void setActive(boolean active) {
+        this.isActive = active;
     }
     
     /**
