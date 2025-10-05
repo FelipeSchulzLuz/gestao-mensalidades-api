@@ -1,5 +1,8 @@
 # 💳 Guia de Desenvolvimento com Stripe
 
+> **💡 IMPORTANTE:** O Stripe CLI roda na sua **máquina local** (não no servidor Docker).  
+> Use o script `start-stripe.ps1` para facilitar a inicialização.
+
 ## 📋 Índice
 
 1. [Instalação da Stripe CLI](#instalação-da-stripe-cli)
