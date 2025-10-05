@@ -37,9 +37,14 @@ out/
 .vscode/
 
 ### Environment Variables ###
+# Environment
 .env
-.env.local
-.env.*.local
+.env.*
+!.env.example
+!.env.docker
+
+# Credenciais (NUNCA COMMITAR!)
+CREDENCIAIS.md
 
 ### Secrets and Sensitive Data ###
 application-local.yml

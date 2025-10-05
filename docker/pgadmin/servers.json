@@ -1,0 +1,14 @@
+{
+    "Servers": {
+        "1": {
+            "Name": "Gestão Mensalidades - PostgreSQL",
+            "Group": "Servers",
+            "Host": "postgres",
+            "Port": 5432,
+            "MaintenanceDB": "gestao_mensalidades_dev",
+            "Username": "gestao_app_user",
+            "SSLMode": "prefer",
+            "PassFile": "/pgpass"
+        }
+    }
+}
