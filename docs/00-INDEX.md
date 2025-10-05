@@ -22,6 +22,14 @@ Este documento serve como índice centralizado de toda a documentação do proje
 3. **05-PLANOS.md** - Arquitetura de planos (próxima implementação)
 4. **04-STRIPE.md** - Referência de integração Stripe
 
+### ⚠️ IMPORTANTE: Nova Arquitetura Firebase
+
+**🔥 O projeto está migrando para Firebase!**
+
+1. **06-ARQUITETURA-FIREBASE.md** - NOVA arquitetura baseada em Firebase
+2. **PLANO_MIGRACAO.md** (raiz) - Plano detalhado de migração Java → Firebase
+3. ⚠️ Backend Java atual será descontinuado
+
 ### Para Configuração de Infraestrutura
 
 1. **03-DOCKER.md** - Configuração completa Docker
@@ -43,6 +51,23 @@ Este documento serve como índice centralizado de toda a documentação do proje
 **Descrição:** Checklist completo das 14 fases de desenvolvimento.  
 **Quando usar:** Planejar sprints, verificar progresso, identificar gaps.  
 **Conteúdo:** 14 fases detalhadas, estimativas, dependências, status visual.
+
+#### 🔄 [PLANO_MIGRACAO.md](../PLANO_MIGRACAO.md) ⚠️ **MIGRAÇÃO FIREBASE**
+**Descrição:** **Plano detalhado de migração Java/PostgreSQL → Firebase**.  
+**Quando usar:** **ANTES** de iniciar desenvolvimento Firebase.  
+**Conteúdo:**
+- Análise de impacto (componentes descartados vs. criados)
+- Estratégia de migração (branch separada recomendada)
+- 8 fases de implementação (checklist completo)
+- Estrutura de arquivos (nova)
+- Comparação antes vs. depois (código, tempo, custo)
+- Riscos e mitigações
+- Análise de custos ($55-115/mês → $0.68/mês)
+- Recursos de aprendizado
+
+**Tempo de leitura:** 40 minutos  
+**Impacto:** 🔴 **CRÍTICO** - Substitui CHECKLIST_DESENVOLVIMENTO.md  
+**Status:** 🟡 Aguardando aprovação
 
 #### 🔐 CREDENCIAIS.md *(não commitado)*
 **Descrição:** Credenciais sensíveis (senhas, chaves, tokens).  
@@ -142,7 +167,30 @@ Este documento serve como índice centralizado de toda a documentação do proje
 - Mockups de admin panel
 
 **Tempo de leitura:** 25 minutos  
-**Pré-requisitos:** 02-ARQUITETURA.md, 04-STRIPE.md
+**Pré-requisitos:** Conhecimento de Spring Boot e Stripe
+
+---
+
+#### 🔥 [06-ARQUITETURA-FIREBASE.md](./06-ARQUITETURA-FIREBASE.md) ⚠️ **NOVA ARQUITETURA**
+**Descrição:** **MUDANÇA COMPLETA** - Migração para Firebase (serverless).  
+**Quando usar:** **LEIA ISTO PRIMEIRO** antes de continuar desenvolvimento!  
+**Conteúdo:**
+- ⚠️ Backend Java será **DESCONTINUADO**
+- Firebase Authentication (substitui JWT)
+- Cloud Firestore (substitui PostgreSQL)
+- Cloud Functions (substitui Spring Boot)
+- Stripe Extension oficial (80% do código eliminado)
+- Modelo de dados Firestore
+- Fluxos automatizados
+- Regras de segurança
+- Comparação antes vs. depois
+- Vantagens da nova arquitetura (90% menos código, -86% tempo, -80% custo)
+
+**Tempo de leitura:** 30 minutos  
+**Impacto:** 🔴 **CRÍTICO** - Reescrita arquitetural completa  
+**Status:** 🟡 Planejamento
+
+---
 
 ---
 
