@@ -1,0 +1,205 @@
+# ==================================
+# APPLICATION CONFIGURATION
+# ==================================
+spring:
+  application:
+    name: gestao-mensalidades-api
+  
+  profiles:
+    active: ${SPRING_PROFILE:dev}
+
+---
+# ==================================
+# DEVELOPMENT PROFILE
+# ==================================
+spring:
+  config:
+    activate:
+      on-profile: dev
+  
+  # Database Configuration
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:gestao_mensalidades_dev}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      connection-timeout: 20000
+      maximum-pool-size: 10
+      minimum-idle: 5
+      idle-timeout: 300000
+      max-lifetime: 1200000
+  
+  # JPA/Hibernate Configuration
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update  # Usar 'update' em dev para facilitar desenvolvimento
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+        jdbc:
+          batch_size: 20
+        order_inserts: true
+        order_updates: true
+  
+  # Security Configuration
+  security:
+    jwt:
+      secret: ${JWT_SECRET:dev-secret-key-change-in-production-must-be-at-least-256-bits}
+      expiration: ${JWT_EXPIRATION:86400000}  # 24 horas em milissegundos
+
+# Stripe Configuration
+stripe:
+  api-key: ${STRIPE_SECRET_KEY:sk_test_your_test_key_here}
+  publishable-key: ${STRIPE_PUBLISHABLE_KEY:pk_test_your_test_key_here}
+  webhook-secret: ${STRIPE_WEBHOOK_SECRET:whsec_your_webhook_secret_here}
+
+# Server Configuration
+server:
+  port: ${SERVER_PORT:8080}
+  error:
+    include-message: always
+    include-binding-errors: always
+    include-stacktrace: on_param
+    include-exception: false
+  servlet:
+    context-path: /api
+
+# Logging Configuration
+logging:
+  level:
+    root: INFO
+    br.com.gestaomensalidades: DEBUG
+    org.springframework.web: DEBUG
+    org.springframework.security: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    com.stripe: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %logger{36} - %msg%n"
+
+# Application Configuration
+application:
+  frontend:
+    url: ${FRONTEND_URL:http://localhost:3000}
+    success-url: ${FRONTEND_URL:http://localhost:3000}/checkout/success
+    cancel-url: ${FRONTEND_URL:http://localhost:3000}/checkout/cancel
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000}
+
+---
+# ==================================
+# PRODUCTION PROFILE
+# ==================================
+spring:
+  config:
+    activate:
+      on-profile: prod
+  
+  # Database Configuration
+  datasource:
+    url: jdbc:postgresql://${DB_HOST}:${DB_PORT:5432}/${DB_NAME}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      connection-timeout: 20000
+      maximum-pool-size: 20
+      minimum-idle: 10
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      auto-commit: false
+      connection-test-query: SELECT 1
+  
+  # JPA/Hibernate Configuration
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate  # NUNCA usar 'update' ou 'create' em produção
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+        use_sql_comments: false
+        jdbc:
+          batch_size: 50
+        order_inserts: true
+        order_updates: true
+        generate_statistics: false
+  
+  # Security Configuration
+  security:
+    jwt:
+      secret: ${JWT_SECRET}  # OBRIGATÓRIO em produção via variável de ambiente
+      expiration: ${JWT_EXPIRATION:86400000}  # 24 horas
+
+# Stripe Configuration
+stripe:
+  api-key: ${STRIPE_SECRET_KEY}  # OBRIGATÓRIO: sk_live_...
+  publishable-key: ${STRIPE_PUBLISHABLE_KEY}  # OBRIGATÓRIO: pk_live_...
+  webhook-secret: ${STRIPE_WEBHOOK_SECRET}  # OBRIGATÓRIO: whsec_...
+
+# Server Configuration
+server:
+  port: ${SERVER_PORT:8080}
+  error:
+    include-message: always
+    include-binding-errors: never
+    include-stacktrace: never
+    include-exception: false
+  servlet:
+    context-path: /api
+  # SSL Configuration (descomente quando tiver certificado)
+  # ssl:
+  #   enabled: true
+  #   key-store: ${SSL_KEY_STORE_PATH}
+  #   key-store-password: ${SSL_KEY_STORE_PASSWORD}
+  #   key-store-type: PKCS12
+  compression:
+    enabled: true
+    mime-types: application/json,application/xml,text/html,text/xml,text/plain
+    min-response-size: 1024
+
+# Logging Configuration
+logging:
+  level:
+    root: WARN
+    br.com.gestaomensalidades: INFO
+    org.springframework.web: WARN
+    org.springframework.security: WARN
+    org.hibernate.SQL: WARN
+    com.stripe: INFO
+  file:
+    name: logs/gestao-mensalidades-api.log
+    max-size: 10MB
+    max-history: 30
+    total-size-cap: 1GB
+  pattern:
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %logger{36} - %msg%n"
+
+# Application Configuration
+application:
+  frontend:
+    url: ${FRONTEND_URL}
+    success-url: ${FRONTEND_URL}/checkout/success
+    cancel-url: ${FRONTEND_URL}/checkout/cancel
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS}
+
+# Management/Actuator Configuration (opcional, mas recomendado)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when-authorized
+  metrics:
+    export:
+      prometheus:
+        enabled: false  # Habilitar se usar Prometheus
