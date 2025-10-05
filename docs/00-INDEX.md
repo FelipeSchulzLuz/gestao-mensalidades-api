@@ -22,13 +22,13 @@ Este documento serve como índice centralizado de toda a documentação do proje
 3. **05-PLANOS.md** - Arquitetura de planos (próxima implementação)
 4. **04-STRIPE.md** - Referência de integração Stripe
 
-### ⚠️ IMPORTANTE: Nova Arquitetura Firebase
+### ⚠️ Arquitetura Confirmada: Java/Spring Boot
 
-**🔥 O projeto está migrando para Firebase!**
+**✅ Decisão: Continuamos com Java/Spring Boot + PostgreSQL**
 
-1. **06-ARQUITETURA-FIREBASE.md** - NOVA arquitetura baseada em Firebase
-2. **PLANO_MIGRACAO.md** (raiz) - Plano detalhado de migração Java → Firebase
-3. ⚠️ Backend Java atual será descontinuado
+- Documentos Firebase (06-ARQUITETURA-FIREBASE.md, PLANO_MIGRACAO.md) são **apenas referência**
+- Backend Java é a **arquitetura oficial**
+- Ver `DECISAO_FIREBASE.md` para justificativa
 
 ### Para Configuração de Infraestrutura
 
@@ -171,24 +171,19 @@ Este documento serve como índice centralizado de toda a documentação do proje
 
 ---
 
-#### 🔥 [06-ARQUITETURA-FIREBASE.md](./06-ARQUITETURA-FIREBASE.md) ⚠️ **NOVA ARQUITETURA**
-**Descrição:** **MUDANÇA COMPLETA** - Migração para Firebase (serverless).  
-**Quando usar:** **LEIA ISTO PRIMEIRO** antes de continuar desenvolvimento!  
+#### � [06-ARQUITETURA-FIREBASE.md](./06-ARQUITETURA-FIREBASE.md) ❌ **ARQUIVADO**
+**Status:** ❌ **DESCARTADO** - Apenas referência histórica  
+**Descrição:** Análise de migração para Firebase (não será implementado).  
+**Quando usar:** Curiosidade acadêmica, comparação de arquiteturas.  
 **Conteúdo:**
-- ⚠️ Backend Java será **DESCONTINUADO**
-- Firebase Authentication (substitui JWT)
-- Cloud Firestore (substitui PostgreSQL)
-- Cloud Functions (substitui Spring Boot)
-- Stripe Extension oficial (80% do código eliminado)
-- Modelo de dados Firestore
-- Fluxos automatizados
-- Regras de segurança
-- Comparação antes vs. depois
-- Vantagens da nova arquitetura (90% menos código, -86% tempo, -80% custo)
+- Análise Firebase Authentication vs. JWT
+- Cloud Firestore vs. PostgreSQL
+- Cloud Functions vs. Spring Boot
+- Stripe Extension vs. SDK direto
+- Comparações numéricas (código, tempo, custo)
 
-**Tempo de leitura:** 30 minutos  
-**Impacto:** 🔴 **CRÍTICO** - Reescrita arquitetural completa  
-**Status:** 🟡 Planejamento
+**Decisão:** ✅ **Continuamos com Java/Spring Boot + PostgreSQL**  
+**Ver:** `DECISAO_FIREBASE.md` para justificativa completa
 
 ---
 
