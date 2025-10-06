@@ -15,6 +15,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./database/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+      - ./database/migrations/002_add_firebase_auth_support.sql:/docker-entrypoint-initdb.d/02-firebase-auth.sql:ro
     networks:
       - gestao-network
     healthcheck:
@@ -43,7 +44,7 @@ services:
     container_name: gestao-pgadmin
     restart: unless-stopped
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@gestao.local
+      PGADMIN_DEFAULT_EMAIL: schulz.neo@gmail.com
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin123}
       PGADMIN_CONFIG_SERVER_MODE: 'False'
       PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
