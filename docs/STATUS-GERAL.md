@@ -1,7 +1,17 @@
 # 📊 Status Geral do Projeto
 
 > **Documento consolidado de todos os status**  
-> **Última atualização:** 2025-10-05
+> **Última atualização:### ❌### ❌ Decisões Descartadas
+
+| Decisão | Status | Razão |
+|---------|--------|-------|
+| Migração para Firebase | ❌ Descartada | Optamos por arquitetura híbrida JWT+Firebase |
+| Modelo "Plan" único | ❌ Obsoleto | Substituído por Products + Prices (Stripe) |ões Descartadas
+
+| Decisão | Status | Notas |
+|---------|--------|-------|
+| Migração para Firebase | ❌ Descartada | Optamos por autenticação híbrida (JWT + Firebase Auth) |
+| Modelo "Plan" único | ❌ Obsoleto | Substituído por Products + Prices (Stripe) |5-10-05
 
 ---
 
@@ -102,10 +112,10 @@ FASES PENDENTES (11/14 - 78.6%)
 
 ### ❌ Decisões Descartadas
 
-| Decisão | Status | Documento |
-|---------|--------|-----------|
-| Migração para Firebase | ❌ Descartada | [06-ARQUITETURA-FIREBASE.md](./06-ARQUITETURA-FIREBASE.md) |
-| Modelo "Plan" único | ❌ Obsoleto | [05-PLANOS.md](./05-PLANOS.md) |
+| Decisão | Status | Razão |
+|---------|--------|-------|
+| Migração para Firebase | ❌ Descartada | Optamos por arquitetura híbrida JWT+Firebase |
+| Modelo "Plan" único | ❌ Obsoleto | Substituído por Products + Prices (Stripe) |
 
 ---
 
@@ -188,14 +198,6 @@ FASES PENDENTES (11/14 - 78.6%)
 | [17-ARQUITETURA-HIBRIDA.md](./17-ARQUITETURA-HIBRIDA.md) | Especificação completa | ✅ Atual |
 | [02-ARQUITETURA.md](./02-ARQUITETURA.md) | Clean Architecture | 🔄 Atualizar |
 | [09-CHECKLIST-DESENVOLVIMENTO.md](./09-CHECKLIST-DESENVOLVIMENTO.md) | Tarefas | 🔄 Atualizar |
-
-### ⚠️ Documentos Obsoletos
-
-| Documento | Status | Motivo |
-|-----------|--------|--------|
-| [05-PLANOS.md](./05-PLANOS.md) | ⚠️ Deprecated | Substituído por Products + Prices |
-| [06-ARQUITETURA-FIREBASE.md](./06-ARQUITETURA-FIREBASE.md) | 📚 Referência | Decisão não implementada |
-| [15-PLANO-MIGRACAO.md](./15-PLANO-MIGRACAO.md) | 📚 Referência | Migração Firebase descartada |
 
 ---
 

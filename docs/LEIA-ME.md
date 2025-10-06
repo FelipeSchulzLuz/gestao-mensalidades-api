@@ -5,8 +5,12 @@
 
 ---
 
-## 🎯 Escolha Seu Perfil
+## 🎯 Escolha Seu ### 🏭️ Arquitetura (Referência constante)
 
+| Documento | Foco | Status |
+|-----------|------|--------|
+| [17-ARQUITETURA-HIBRIDA.md](./17-ARQUITETURA-HIBRIDA.md) | Products + Prices | ✅ ATUAL |
+| [02-ARQUITETURA.md](./02-ARQUITETURA.md) | Clean Architecture | ✅ BASE |
 <details open>
 <summary><strong>👶 Sou Novo no Projeto</strong></summary>
 
@@ -188,8 +192,7 @@
 | Documento | Foco | Status |
 |-----------|------|--------|
 | [17-ARQUITETURA-HIBRIDA.md](./17-ARQUITETURA-HIBRIDA.md) | Products + Prices | ✅ ATUAL |
-| [05-PLANOS.md](./05-PLANOS.md) | Planos (antigo) | ⚠️ DEPRECATED |
-| [06-ARQUITETURA-FIREBASE.md](./06-ARQUITETURA-FIREBASE.md) | Firebase (ref) | 📚 REFERÊNCIA |
+| [02-ARQUITETURA.md](./02-ARQUITETURA.md) | Clean Architecture | ✅ BASE |
 
 ### 🛠️ Ferramentas & Integração
 
@@ -229,7 +232,6 @@
 | [ESTRUTURA-DOCUMENTACAO.md](./ESTRUTURA-DOCUMENTACAO.md) | Como docs estão organizados |
 | [13-HYBRID-AUTH-STATUS.md](./13-HYBRID-AUTH-STATUS.md) | Status auth (arquivado) |
 | [14-IMPLEMENTACAO-COMPLETA.md](./14-IMPLEMENTACAO-COMPLETA.md) | Resumo implementação |
-| [15-PLANO-MIGRACAO.md](./15-PLANO-MIGRACAO.md) | Firebase (referência) |
 | [16-PROGRESSO.md](./16-PROGRESSO.md) | Tracking (arquivado) |
 
 ---

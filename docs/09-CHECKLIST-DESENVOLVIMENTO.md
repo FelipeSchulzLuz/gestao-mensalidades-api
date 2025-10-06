@@ -30,7 +30,7 @@ Progresso Total: 21.4% (3/14 fases)
 
 ## 📖 Documentação de Referência
 
-- `docs/05-PLANOS.md` - Estratégia completa de gerenciamento de planos
+- `docs/17-ARQUITETURA-HIBRIDA.md` - Arquitetura Products + Prices (atual)
 - `docs/04-STRIPE.md` - Guia completo do Stripe CLI e webhooks
 - `docs/03-DOCKER.md` - Instruções para rodar PostgreSQL, pgAdmin, Redis
 - `CREDENCIAIS.md` - Todas credenciais e acessos (protegido no .gitignore)
@@ -196,7 +196,7 @@ Este checklist detalha todos os passos necessários para desenvolver o sistema d
 > - Flags de controle (isActive, isFeatured, displayOrder)
 > - Sincronização (stripePriceId, stripeProductId)
 > 
-> 📖 Consulte `docs/05-PLANOS.md` para detalhes completos
+> 📖 Consulte `docs/17-ARQUITETURA-HIBRIDA.md` para arquitetura Products + Prices
 
 ### 2.3 Repositories
 - [x] Criar `UserRepository extends JpaRepository` ✅
@@ -1027,7 +1027,7 @@ A Fase 3 já implementou todo o módulo de autenticação seguindo Clean Archite
   - Como configurar webhooks com Stripe CLI
   - Estrutura do projeto (Clean Architecture)
   - Endpoints disponíveis (link para Swagger)
-  - Arquitetura de gerenciamento de planos (link para docs/05-PLANOS.md)
+  - Arquitetura de gerenciamento de planos (link para docs/17-ARQUITETURA-HIBRIDA.md)
 
 ### 13.3 Documentação Stripe
 - [ ] Documentar IDs necessários (prices, products) ✅ (JÁ FEITO - ver CREDENCIAIS.md)
@@ -1037,7 +1037,7 @@ A Fase 3 já implementou todo o módulo de autenticação seguindo Clean Archite
 - [ ] Documentar comandos do Stripe CLI ✅ (JÁ FEITO - ver docs/04-STRIPE.md)
 
 ### 13.4 Documentação Adicional
-- [ ] Atualizar `docs/05-PLANOS.md` com implementação real
+- [ ] Atualizar `docs/17-ARQUITETURA-HIBRIDA.md` com implementação completa Products+Prices
 - [ ] Criar diagramas de fluxo (opcional)
   - Fluxo de registro → checkout → webhook
   - Fluxo de criação de plano (admin) → Stripe → banco
@@ -1220,7 +1220,7 @@ A Fase 3 já implementou todo o módulo de autenticação seguindo Clean Archite
 - [ ] Variáveis de ambiente documentadas ✅ (JÁ FEITO - .env.example)
 - [ ] Guia de desenvolvimento local ✅ (JÁ FEITO - docs/04-STRIPE.md)
 - [ ] Guia Docker ✅ (JÁ FEITO - docs/03-DOCKER.md)
-- [ ] Arquitetura de planos documentada ✅ (JÁ FEITO - docs/05-PLANOS.md)
+- [ ] Arquitetura de planos documentada ✅ (JÁ FEITO - docs/17-ARQUITETURA-HIBRIDA.md)
 - [ ] Credenciais e senhas documentadas ✅ (JÁ FEITO - CREDENCIAIS.md)
 - [ ] Guia de deploy criado
 

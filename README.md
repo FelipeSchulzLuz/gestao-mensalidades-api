@@ -107,7 +107,7 @@ gestao-mensalidades-api/
 │   ├── 02-ARQUITETURA.md         # Arquitetura do sistema
 │   ├── 03-DOCKER.md              # Guia Docker
 │   ├── 04-STRIPE.md              # Integração Stripe
-│   ├── 05-PLANOS.md              # Gerenciamento de planos
+│   ├── 17-ARQUITETURA-HIBRIDA.md # Products + Prices (atual)
 │   └── 99-STATUS.md              # Status do projeto
 ├── scripts/                       # 🔧 Scripts utilitários
 │   ├── start-dev.ps1             # Inicia Docker (PostgreSQL, Redis, pgAdmin)

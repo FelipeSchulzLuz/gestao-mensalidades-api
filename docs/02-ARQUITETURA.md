@@ -720,7 +720,7 @@ public class WebhookProcessor {
 
 ### Arquitetura de Sincronização (Planos)
 
-Veja detalhes completos em **[docs/05-PLANOS.md](./05-PLANOS.md)**.
+Veja detalhes completos em **[docs/17-ARQUITETURA-HIBRIDA.md](./17-ARQUITETURA-HIBRIDA.md)** (Products + Prices).
 
 **Estratégia:** Sincronização bidirecional automática
 
@@ -793,7 +793,7 @@ public ResponseEntity<Void> handleWebhook(@RequestBody String payload,
 - **[01-INICIO-RAPIDO.md](./01-INICIO-RAPIDO.md)** - Guia de início rápido
 - **[03-DOCKER.md](./03-DOCKER.md)** - Configuração do Docker
 - **[04-STRIPE.md](./04-STRIPE.md)** - Integração com Stripe
-- **[05-PLANOS.md](./05-PLANOS.md)** - Arquitetura de gerenciamento de planos
+- **[17-ARQUITETURA-HIBRIDA.md](./17-ARQUITETURA-HIBRIDA.md)** - Arquitetura Products + Prices
 - **[../CHECKLIST_DESENVOLVIMENTO.md](../CHECKLIST_DESENVOLVIMENTO.md)** - Checklist de implementação
 
 ---

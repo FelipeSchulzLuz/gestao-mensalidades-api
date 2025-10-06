@@ -25,13 +25,13 @@ Este documento serve como índice centralizado de toda a documentação do proje
 4. **99-STATUS.md** - Progresso atual
 5. **04-STRIPE.md** - Referência de integração Stripe
 
-### ⚠️ Arquitetura Confirmada: Java/Spring Boot
+### ✅ Arquitetura Confirmada: Java/Spring Boot + PostgreSQL
 
-**✅ Decisão: Continuamos com Java/Spring Boot + PostgreSQL**
-
-- Documentos Firebase (06-ARQUITETURA-FIREBASE.md, PLANO_MIGRACAO.md) são **apenas referência**
-- Backend Java é a **arquitetura oficial**
-- Ver `DECISAO_FIREBASE.md` para justificativa
+**Arquitetura oficial do projeto:**
+- Backend: Java 21 + Spring Boot 3.5.6
+- Database: PostgreSQL 15 (Docker)
+- Autenticação: Híbrida (JWT + Firebase Auth)
+- Pagamentos: Stripe (Products + Prices model)
 
 ### Para Configuração de Infraestrutura
 
@@ -84,16 +84,7 @@ Este documento serve como índice centralizado de toda a documentação do proje
 **Descrição:** Integração completa com Stripe (webhooks, CLI, API).  
 **Quando usar:** Implementar pagamentos, debugar webhooks.
 
-#### 📋 [05-PLANOS.md](./05-PLANOS.md)
-**Descrição:** Arquitetura de gerenciamento de planos e assinaturas.  
-**Quando usar:** Implementar CRUD de planos, sincronização com Stripe.
-
-#### 🔥 [06-ARQUITETURA-FIREBASE.md](./06-ARQUITETURA-FIREBASE.md)
-**Descrição:** Arquitetura alternativa usando Firebase (REFERÊNCIA).  
-**Quando usar:** Comparação de arquiteturas, futuras migrações.  
-**⚠️ Apenas referência - Projeto usa Java/Spring Boot**
-
-#### 🔐 [07-AUTENTICACAO-HIBRIDA.md](./07-AUTENTICACAO-HIBRIDA.md)
+####  [07-AUTENTICACAO-HIBRIDA.md](./07-AUTENTICACAO-HIBRIDA.md)
 **Descrição:** Sistema de autenticação JWT + Firebase Auth.  
 **Quando usar:** Entender fluxo de autenticação, implementar endpoints.
 
@@ -131,12 +122,7 @@ Este documento serve como índice centralizado de toda a documentação do proje
 **Descrição:** Resumo da implementação completa do sistema.  
 **Quando usar:** Visão geral do que foi implementado, documentação de referência.
 
-#### 🔄 [15-PLANO-MIGRACAO.md](./15-PLANO-MIGRACAO.md) ⚠️ **REFERÊNCIA**
-**Descrição:** Plano detalhado de migração Java/PostgreSQL → Firebase.  
-**Quando usar:** Apenas referência - Projeto continua com Java.  
-**⚠️ Este documento é histórico/referência**
-
-#### 📊 [16-PROGRESSO.md](./16-PROGRESSO.md)
+####  [16-PROGRESSO.md](./16-PROGRESSO.md)
 **Descrição:** Tracking de progresso e próximos passos.  
 **Quando usar:** Reuniões de status, planejamento de sprints.
 
@@ -237,43 +223,6 @@ Este documento serve como índice centralizado de toda a documentação do proje
 
 **Tempo de leitura:** 15 minutos  
 **Pré-requisitos:** Conta Stripe (test mode), Stripe CLI instalado
-
----
-
-#### 📦 [05-PLANOS.md](./05-PLANOS.md) ⚠️ **DEPRECATED**
-**Status:** ⚠️ **OBSOLETO** - Substituído por 17-ARQUITETURA-HIBRIDA.md  
-**Motivo:** Modelo "Plan" foi substituído por "Product + Price"
-**Descrição:** Arquitetura de gerenciamento de planos (admin panel + sincronização Stripe).  
-**Quando usar:** Implementar Fase 7 (Módulo de Planos), entender estratégia de sincronização.  
-**Conteúdo:**
-- Decisão arquitetural (Database + Admin vs .env)
-- Diagrama de arquitetura de planos
-- 17 endpoints (11 admin + 2 públicos + 4 sincronização)
-- 4 DTOs (PlanResponseDTO, CreatePlanRequestDTO, UpdatePlanRequestDTO, PlanMetricsDTO)
-- 3 Services (PlanService, PlanAdminService, StripePlanSyncService)
-- Estratégia de sincronização bidirecional
-- Webhooks de sincronização (5 eventos)
-- Casos de uso (Black Friday, A/B testing, métricas MRR/ARR)
-- Mockups de admin panel
-
-**Tempo de leitura:** 25 minutos  
-**Pré-requisitos:** Conhecimento de Spring Boot e Stripe
-
----
-
-#### � [06-ARQUITETURA-FIREBASE.md](./06-ARQUITETURA-FIREBASE.md) ❌ **ARQUIVADO**
-**Status:** ❌ **DESCARTADO** - Apenas referência histórica  
-**Descrição:** Análise de migração para Firebase (não será implementado).  
-**Quando usar:** Curiosidade acadêmica, comparação de arquiteturas.  
-**Conteúdo:**
-- Análise Firebase Authentication vs. JWT
-- Cloud Firestore vs. PostgreSQL
-- Cloud Functions vs. Spring Boot
-- Stripe Extension vs. SDK direto
-- Comparações numéricas (código, tempo, custo)
-
-**Decisão:** ✅ **Continuamos com Java/Spring Boot + PostgreSQL**  
-**Ver:** `DECISAO_FIREBASE.md` para justificativa completa
 
 ---
 
@@ -422,8 +371,6 @@ stripe listen --forward-to localhost:8800/api/webhooks/custom
 | 02-ARQUITETURA.md | ✅ Completo | 2025-01-05 |
 | 03-DOCKER.md | ✅ Completo | 2025-01-05 |
 | 04-STRIPE.md | ✅ Completo | 2025-01-04 |
-| 05-PLANOS.md | ✅ Completo | 2025-01-04 |
-| 06-ARQUITETURA-FIREBASE.md | ⚠️ Referência | 2025-01-05 |
 | 07-AUTENTICACAO-HIBRIDA.md | ✅ Completo | 2025-10-05 |
 | 08-MIGRATIONS-BOAS-PRATICAS.md | ✅ Completo | 2025-10-05 |
 | 09-CHECKLIST-DESENVOLVIMENTO.md | ✅ Completo | 2025-10-05 |
@@ -432,7 +379,6 @@ stripe listen --forward-to localhost:8800/api/webhooks/custom
 | 12-DEPLOY-SERVIDOR.md | ✅ Completo | 2025-10-05 |
 | 13-HYBRID-AUTH-STATUS.md | ✅ Completo | 2025-10-05 |
 | 14-IMPLEMENTACAO-COMPLETA.md | ✅ Completo | 2025-10-05 |
-| 15-PLANO-MIGRACAO.md | ⚠️ Referência | 2025-01-05 |
 | 16-PROGRESSO.md | ✅ Completo | 2025-10-05 |
 | 17-ARQUITETURA-HIBRIDA.md | 🔴 CRÍTICO | 2025-10-05 |
 | 18-MUDANCA-ARQUITETURAL-RESUMO.md | 🚨 OBRIGATÓRIO | 2025-10-05 |
