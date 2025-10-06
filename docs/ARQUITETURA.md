@@ -1,7 +1,7 @@
 # Arquitetura do Sistema - Gestão de Mensalidades API
 
 > **📅 Última atualização:** 2025-10-06  
-> **📚 Complemento:** Ver [17-ARQUITETURA-HIBRIDA.md](./17-ARQUITETURA-HIBRIDA.md) para arquitetura Products + Prices  
+> **📚 Complemento:** Ver [ARQUITETURA-HIBRIDA.md](./ARQUITETURA-HIBRIDA.md) para arquitetura Products + Prices  
 > **✅ Migration 003:** Aplicada com sucesso em 2025-10-06 04:30:58  
 > **✅ Entidades e Repositories:** Implementados em 2025-10-06
 
@@ -16,8 +16,7 @@
 > **Status Atual:** Migration aplicada ✅ | Entidades implementadas ✅ | Services em desenvolvimento ⏳
 > 
 > **Leitura obrigatória:**
-> - [18-MUDANCA-ARQUITETURAL-RESUMO.md](./18-MUDANCA-ARQUITETURAL-RESUMO.md) (10 min)
-> - [17-ARQUITETURA-HIBRIDA.md](./17-ARQUITETURA-HIBRIDA.md) (30 min)
+> - [ARQUITETURA-HIBRIDA.md](./ARQUITETURA-HIBRIDA.md) (30 min) - Leitura recomendada
 
 ---
 
@@ -90,7 +89,7 @@ Este projeto implementa uma API RESTful para **gerenciamento de assinaturas e e-
 ## 🆕 Nova Arquitetura (Products + Prices)
 
 > **Esta seção descreve a arquitetura híbrida implementada em Outubro 2025.**  
-> Para detalhes completos, ver [17-ARQUITETURA-HIBRIDA.md](./17-ARQUITETURA-HIBRIDA.md)
+> Para detalhes completos, ver [ARQUITETURA-HIBRIDA.md](./ARQUITETURA-HIBRIDA.md)
 
 ### Conceito Central
 
@@ -273,7 +272,7 @@ if (org.getCommerceMode() == CommerceMode.HYBRID) {
 ### Referência Completa
 
 📖 Para schemas SQL completos, exemplos de código, e checklist de implementação:  
-→ **[17-ARQUITETURA-HIBRIDA.md](./17-ARQUITETURA-HIBRIDA.md)**
+→ **[ARQUITETURA-HIBRIDA.md](./ARQUITETURA-HIBRIDA.md)**
 
 ---
 
@@ -729,7 +728,7 @@ public class WebhookProcessor {
 
 ### Arquitetura de Sincronização (Planos)
 
-Veja detalhes completos em **[docs/17-ARQUITETURA-HIBRIDA.md](./17-ARQUITETURA-HIBRIDA.md)** (Products + Prices).
+Veja detalhes completos em **[docs/ARQUITETURA-HIBRIDA.md](./ARQUITETURA-HIBRIDA.md)** (Products + Prices).
 
 **Estratégia:** Sincronização bidirecional automática
 
@@ -799,10 +798,11 @@ public ResponseEntity<Void> handleWebhook(@RequestBody String payload,
 
 ## 📚 Documentos Relacionados
 
-- **[01-INICIO-RAPIDO.md](./01-INICIO-RAPIDO.md)** - Guia de início rápido
-- **[03-DOCKER.md](./03-DOCKER.md)** - Configuração do Docker
-- **[04-STRIPE.md](./04-STRIPE.md)** - Integração com Stripe
-- **[17-ARQUITETURA-HIBRIDA.md](./17-ARQUITETURA-HIBRIDA.md)** - Arquitetura Products + Prices
+- **[INDEX.md](./INDEX.md)** - Índice completo da documentação
+- **[INICIO-RAPIDO.md](./INICIO-RAPIDO.md)** - Guia de início rápido
+- **[DOCKER.md](./DOCKER.md)** - Configuração do Docker
+- **[STRIPE.md](./STRIPE.md)** - Integração com Stripe
+- **[ARQUITETURA-HIBRIDA.md](./ARQUITETURA-HIBRIDA.md)** - Arquitetura Products + Prices
 - **[../CHECKLIST_DESENVOLVIMENTO.md](../CHECKLIST_DESENVOLVIMENTO.md)** - Checklist de implementação
 
 ---

@@ -295,11 +295,12 @@ taskkill /PID <PID> /F
 
 ## 📚 Documentação Adicional
 
-- **Docker:** `03-DOCKER.md` - Guia completo do Docker
-- **Stripe:** `04-STRIPE.md` - Guia completo do Stripe CLI
-- **Credenciais:** `11-CREDENCIAIS.md` - Todas senhas e acessos
-- **Arquitetura:** `17-ARQUITETURA-HIBRIDA.md` - Products + Prices (híbrido)
-- **Status:** `STATUS-GERAL.md` - Progresso consolidado do projeto
+- **Índice:** `INDEX.md` - Índice completo de toda documentação
+- **Docker:** `DOCKER.md` - Guia completo do Docker
+- **Stripe:** `STRIPE.md` - Guia completo do Stripe CLI
+- **Credenciais:** `CREDENCIAIS.md` - Todas senhas e acessos (local only)
+- **Arquitetura:** `ARQUITETURA-HIBRIDA.md` - Products + Prices (híbrido)
+- **Status:** `PROJECT-STATUS.md` - Progresso consolidado do projeto (80% backend)
 
 ---
 
