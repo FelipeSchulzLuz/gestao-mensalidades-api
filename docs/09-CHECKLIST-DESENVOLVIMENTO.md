@@ -1023,7 +1023,7 @@ A Fase 3 já implementou todo o módulo de autenticação seguindo Clean Archite
   - Instruções de instalação
   - Variáveis de ambiente necessárias
   - Como rodar localmente com Docker
-  - Como usar `start-dev.ps1` para iniciar ambiente
+  - Como usar `./scripts/run-make.sh start` para iniciar ambiente
   - Como configurar webhooks com Stripe CLI
   - Estrutura do projeto (Clean Architecture)
   - Endpoints disponíveis (link para Swagger)

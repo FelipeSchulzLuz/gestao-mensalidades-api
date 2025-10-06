@@ -1,7 +1,7 @@
 # 💳 Guia de Desenvolvimento com Stripe
 
 > **💡 IMPORTANTE:** O Stripe CLI roda na sua **máquina local** (não no servidor Docker).  
-> Use o script `start-stripe.ps1` para facilitar a inicialização.
+> Use o comando `stripe listen --forward-to localhost:8800/api/webhooks/stripe` para webhooks locais.
 
 ## 📋 Índice
 

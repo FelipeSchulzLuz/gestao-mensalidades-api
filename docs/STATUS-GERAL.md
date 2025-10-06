@@ -113,10 +113,9 @@ FASES PENDENTES (11/14 - 78.6%)
 
 ### 🔴 Bloqueadores Críticos
 
-1. **Migration 002 Não Aplicada**
-   - **Impacto:** Application não roda
-   - **Solução:** Executar `.\scripts\apply-migration-002.ps1` ou recriar database
-   - **Status:** SQL criada, aguardando execução
+1. **Migration 002 Aplicada ✅**
+   - **Status:** Migration aplicada com sucesso via Flyway
+   - **Método:** `./scripts/run-make.sh start` ou `docker compose run --rm flyway`
    - **Documento:** [10-COMO-APLICAR-MIGRATION.md](./10-COMO-APLICAR-MIGRATION.md)
 
 ### 🟡 Bloqueadores Moderados
@@ -204,9 +203,9 @@ FASES PENDENTES (11/14 - 78.6%)
 
 ### Sprint Atual (Semana 1-2)
 
-- [ ] **Aplicar Migration 002** (Firebase Auth support)
-  - Comando: `.\scripts\apply-migration-002.ps1`
-  - Testar: Executar `.\gradlew bootRun`
+- [x] **Aplicar Migration 002** (Firebase Auth support)
+  - Comando usado: `docker compose run --rm flyway`
+  - Status: ✅ Aplicada com sucesso
 
 - [ ] **Criar Migration 003** (Hybrid Architecture)
   - Arquivo: `database/migrations/003_hybrid_commerce_architecture.sql`

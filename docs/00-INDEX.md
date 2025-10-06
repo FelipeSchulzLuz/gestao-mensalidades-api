@@ -298,37 +298,39 @@ Este documento serve como índice centralizado de toda a documentação do proje
 
 ## 🔧 Scripts (pasta scripts/)
 
-### start-dev.ps1
-**Descrição:** Inicia ambiente Docker (PostgreSQL, pgAdmin, Redis).  
+### run-make.sh (wrapper recomendado)
+**Descrição:** Inicia ambiente Docker e aplica migrations via Flyway.  
 **Quando usar:** Todo dia, antes de começar desenvolvimento.  
 **Funcionalidades:**
-- Verifica Docker instalado e rodando
+- Copia .env.docker → .env (se necessário)
 - Inicia containers PostgreSQL, pgAdmin, Redis
-- Health checks automáticos
-- Exibe informações de acesso
-- Mostra instruções para Stripe CLI
+- Executa migrations via Flyway
+- Sobe a aplicação
 
 **Uso:**
-```powershell
-.\scripts\start-dev.ps1
+```bash
+chmod +x scripts/*.sh
+./scripts/run-make.sh start
 ```
 
-### start-stripe.ps1
+### Stripe CLI (manual)
 **Descrição:** Inicia Stripe CLI para webhooks locais.  
 **Quando usar:** Desenvolver/testar features de pagamento e webhooks.  
 **Funcionalidades:**
-- Verifica Stripe CLI instalado
-- Verifica autenticação Stripe
-- Inicia listener de webhooks
+- Listener de webhooks
 - Forward para `localhost:8800/api/webhooks/stripe`
 - Exibe webhook secret
 
 **Uso:**
-```powershell
-.\scripts\start-stripe.ps1
+```bash
+# Login primeiro
+stripe login
+
+# Iniciar listener
+stripe listen --forward-to localhost:8800/api/webhooks/stripe
 
 # Ou custom endpoint:
-.\scripts\start-stripe.ps1 -ForwardTo "localhost:8800/api/webhooks/custom"
+stripe listen --forward-to localhost:8800/api/webhooks/custom
 ```
 
 ---

@@ -9,42 +9,42 @@
 
 ### Docker & Ambiente
 
-```powershell
+```bash
+# Fluxo padronizado (recomendado)
+./scripts/run-make.sh start
+
 # Subir todos os serviços
-docker-compose up -d
+docker compose up -d
 
 # Ver logs em tempo real
-docker-compose logs -f
+docker compose logs -f
 
 # Parar tudo
-docker-compose down
+docker compose down
 
-# Recriar database do zero
-.\scripts\recreate-database.ps1
-
-# Aplicar migration específica
-.\scripts\apply-migration-002.ps1
+# Aplicar migrations via Flyway
+docker compose run --rm flyway
 ```
 
 ### Gradle & Aplicação
 
-```powershell
+```bash
 # Compilar
-.\gradlew build
+./gradlew build
 
 # Rodar aplicação
-.\gradlew bootRun
+./gradlew bootRun
 
 # Rodar testes
-.\gradlew test
+./gradlew test
 
 # Limpar build
-.\gradlew clean
+./gradlew clean
 ```
 
 ### Stripe CLI
 
-```powershell
+```bash
 # Login
 stripe login
 
@@ -221,26 +221,31 @@ chore: tarefas
 ## 🔧 Troubleshooting Rápido
 
 ### Application não sobe
-```powershell
+```bash
 # 1. Verificar se Docker está rodando
 docker ps
 
 # 2. Verificar se migrations foram aplicadas
-# Conectar no database e verificar tabelas
+docker compose logs flyway
 
-# 3. Recriar database
-.\scripts\recreate-database.ps1
+# 3. Executar migrations e reiniciar
+./scripts/run-make.sh start
 
-# 4. Tentar novamente
-.\gradlew bootRun
+# 4. Verificar logs
+docker compose logs -f app
 ```
 
 ### Erro de migration
-```powershell
-# Aplicar migration específica
-.\scripts\apply-migration-002.ps1
+```bash
+# Executar migrations via Flyway
+docker compose run --rm flyway
 
-# Ou conectar no DBeaver e executar SQL manualmente
+# Verificar histórico de migrations aplicadas
+docker exec -i $(docker ps -qf "name=gestao-postgres") \
+  psql -U gestao_app_user -d gestao_mensalidades_dev -c \
+  "SELECT version, description, installed_on FROM flyway_schema_history;"
+
+# Ou conectar no DBeaver para inspecionar manualmente
 ```
 
 ### Docker não conecta

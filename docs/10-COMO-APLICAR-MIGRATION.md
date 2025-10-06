@@ -87,6 +87,23 @@ COMMENT ON COLUMN users.firebase_uid IS 'UID do usuário no Firebase...';
 
 ---
 
+## ⚙️ Automatizado (recomendado)
+
+Em vez de aplicar manualmente via editor, prefira o fluxo automatizado com Flyway (reprodutível):
+
+```bash
+# Usar o wrapper/Makefile (recomendado para dev):
+chmod +x scripts/*.sh
+./scripts/run-make.sh start
+
+# Ou executar o serviço flyway diretamente:
+docker compose run --rm flyway
+```
+
+O método automatizado aplica as migrations na ordem controlada pelo Flyway (a partir de `src/main/resources/db/migration`). Use a versão manual (DBeaver) apenas quando precisar inspecionar/editar interativamente.
+
+---
+
 ## ✅ Passo 6: Verificar Resultado
 
 Se tudo correu bem, você verá:
@@ -129,13 +146,13 @@ ORDER BY column_name;
 
 Agora você pode rodar a aplicação:
 
-```powershell
+```bash
 ./gradlew bootRun
 ```
 
 Ou compilar primeiro:
 
-```powershell
+```bash
 ./gradlew clean build
 ```
 

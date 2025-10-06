@@ -33,283 +33,179 @@ docker compose up -d app
 ```
 
 ---
+```markdown
+# � Scripts de Gerenciamento do Banco de Dados
 
-## 📋 Descrição dos Scripts
+Este diretório contém utilitários e um fluxo recomendado para aplicar migrations e gerenciar o banco localmente ou em servidores.
 
-### 🗑️ `recreate-database` (.ps1 / .sh)
-
-**Função:** Recria o banco de dados do ZERO com todas migrations aplicadas.
-
-**⚠️ DESTRUTIVO:** Apaga TODOS os dados!
-
-**Quando usar:**
-- ✅ Desenvolvimento local sem dados importantes
-- ✅ Primeira configuração do ambiente
-- ✅ Quando quer garantir estado limpo do banco
-- ✅ Depois de mudar várias migrations
-
-**Não usar em:**
-- ❌ Produção
-- ❌ Staging com dados importantes
-- ❌ Quando tem dados de teste que quer manter
-
-**Processo:**
-1. Para container PostgreSQL
-2. Remove volume do banco (apaga tudo)
-3. Recria container e volume
-4. Migrations rodam automaticamente via docker-entrypoint-initdb.d/
-5. Verifica se colunas foram criadas
+Objetivo deste documento: remover ambiguidade e fornecer passos exatos, copy/paste, para cenários comuns.
 
 ---
 
-### 🔄 `apply-migration-existing-db` (.ps1 / .sh)
+## Pré-requisitos
 
-**Função:** Aplica migration SEM dropar o banco.
+- Docker & Docker Compose (v2 recommended)
+- Permissão para executar scripts no repositório (chmod +x)
+- (Local dev) Java + Gradle are required only if you plan to run the app with Gradle (`./gradlew bootRun`)
+- No Windows? Use WSL2 and o fluxo Bash abaixo. PowerShell scripts foram removidos do repositório.
 
-**NÃO destrutivo:** Preserva dados existentes!
-
-**Quando usar:**
-- ✅ Staging/Produção
-- ✅ Desenvolvimento com dados importantes
-- ✅ Aplicar APENAS a nova migration
-- ✅ Simular comportamento de produção
-
-**Processo:**
-1. Copia arquivo SQL para dentro do container
-2. Executa migration via `psql` dentro do container
-3. Verifica se colunas foram criadas
-
----
-
-### 🐳 `apply-migration-docker` (.ps1 / .sh)
-
-**Função:** Aplica migration diretamente via pipe no Docker.
-
-**Quando usar:**
-- ✅ Alternativa rápida ao apply-migration-existing-db
-- ✅ Quando não quer copiar arquivo para container
-- ✅ Para automação via CI/CD
-
-**Processo:**
-1. Localiza container PostgreSQL automaticamente
-2. Faz pipe do SQL diretamente para `psql` no container
-3. Verifica colunas criadas
-
----
-
-### 🔧 `install-psql.ps1` (Apenas Windows)
-
-**Função:** Auxilia instalação do cliente PostgreSQL no Windows.
-
-**Métodos:**
-1. Chocolatey
-2. Scoop
-3. Instalador oficial
-
-**Nota:** Não necessário no Linux (use `apt install postgresql-client`)
-
----
-
-### 📋 `apply-migration-002.ps1` (Apenas Windows)
-
-**Função:** Menu interativo com múltiplas opções.
-
-**Opções:**
-1. Copiar SQL para clipboard (usar no DBeaver/pgAdmin)
-2. Aplicar via psql (se instalado)
-3. Aplicar via Docker
-4. Aplicar via .NET/Npgsql (experimental)
-
-**Quando usar:** 
-- ✅ Desenvolvimento Windows sem Docker configurado
-- ✅ Quando tem psql instalado
-- ✅ Para usar DBeaver/pgAdmin manualmente
-
----
-
-## 🎯 Qual Script Usar?
-
-### 🖥️ Desenvolvimento Local (Windows)
-
-```powershell
-# Sem dados importantes? Use este:
-.\scripts\recreate-database.ps1
-
-# Com dados que quer manter?
-.\scripts\apply-migration-existing-db.ps1
-
-# Docker não funciona? Use menu:
-.\scripts\apply-migration-002.ps1
-```
-
----
-
-### 🐧 Servidor Linux (Produção/Staging)
+Certifique-se de ter copiado o template de variáveis de ambiente antes de iniciar:
 
 ```bash
-# SEMPRE use este (não destrutivo):
-./scripts/apply-migration-existing-db.sh
-
-# OU este (mais simples):
-./scripts/apply-migration-docker.sh
-
-# NUNCA use este em produção:
-# ❌ ./scripts/recreate-database.sh
+cp .env.docker .env    # revisão manual recomendada antes de subir em produção
 ```
 
 ---
 
-## 🚀 Workflow Recomendado
+## Fluxo recomendado (rápido) — use o wrapper
 
-### Dev Local (primeira vez)
-
-```powershell
-# Windows
-git clone ...
-cd gestao-mensalidades-api
-docker-compose up -d postgres
-.\scripts\recreate-database.ps1
-.\gradlew bootRun
-```
+Este projeto tem um wrapper que invoca o Makefile e executa os passos padronizados: copiar `.env`, subir infra mínima, executar Flyway e iniciar a app.
 
 ```bash
-# Linux
-git clone ...
-cd gestao-mensalidades-api
-chmod +x scripts/*.sh
-docker-compose up -d postgres
-./scripts/recreate-database.sh
-./gradlew bootRun
-```
-
----
-
-### Nova Migration Criada
-
-```powershell
-# Windows
-git pull
-.\scripts\recreate-database.ps1  # Se não tem dados importantes
-# OU
-.\scripts\apply-migration-existing-db.ps1  # Se quer manter dados
-.\gradlew bootRun
-```
-
-```bash
-# Linux
-git pull
-./scripts/apply-migration-existing-db.sh
-./gradlew bootRun
-```
-
----
-
-### Deploy Servidor (primeira vez)
-
-```bash
-# No servidor Linux
-git clone ...
-cd gestao-mensalidades-api
+# Torne os scripts executáveis (apenas 1x)
 chmod +x scripts/*.sh
 
-# Configurar .env com valores de produção
-nano .env
+# Fluxo padronizado (recomendado)
+./scripts/run-make.sh start
 
-# Subir banco
-docker-compose up -d postgres
-
-# Aplicar migrations
-./scripts/recreate-database.sh  # OK na primeira vez
-
-# Subir aplicação
-docker-compose up -d --build
+# O que esse comando faz (resumo):
+# 1) copia .env.docker -> .env (se .env não existir)
+# 2) sobe serviços mínimos: postgres, redis, pgadmin
+# 3) executa migrations via Flyway (docker compose run --rm flyway)
+# 4) sobe a aplicação (docker compose up -d app)
 ```
+
+Use esse fluxo sempre que quiser uma maneira segura e reprodutível para dev/local.
 
 ---
 
-### Deploy Servidor (atualização)
+## Fluxo manual (passo-a-passo)
+
+Siga estes passos se preferir executar cada etapa manualmente.
+
+1) Preparar variáveis de ambiente
 
 ```bash
-# No servidor Linux
-cd gestao-mensalidades-api
-git pull
+cp .env.docker .env
+# Edite .env se necessário
+```
 
-# BACKUP PRIMEIRO!
-docker exec gestao-postgres pg_dump -U gestao_app_user gestao_mensalidades > backup_$(date +%Y%m%d).sql
+2) Subir infra mínima
 
-# Aplicar nova migration (NÃO destrutivo)
-./scripts/apply-migration-existing-db.sh
+```bash
+docker compose up -d postgres redis pgadmin
+```
 
-# Atualizar aplicação
-docker-compose up -d --build
+3) Rodar migrations (usando o serviço `flyway` definido no `docker-compose.yml`)
 
-# Verificar logs
-docker-compose logs -f app
+```bash
+# Este comando usa o serviço flyway conforme configurado no compose
+docker compose run --rm flyway
+
+# Alternativa: usar alvo Makefile
+make apply-migrations
+```
+
+4) Subir a aplicação
+
+```bash
+docker compose up -d app
+```
+
+5) Verificar a aplicação e o banco
+
+```bash
+# Logs da app
+docker compose logs -f app
+
+# Verificar colunas/tabelas via psql dentro do container (exemplo)
+docker exec -i $(docker ps -qf "name=gestao-postgres") \
+	psql -U gestao_app_user -d gestao_mensalidades_dev -c "\d users"
 ```
 
 ---
 
-## 🔒 Segurança
+## Makefile targets (resumo)
 
-### ✅ SEMPRE:
-- Fazer backup antes de aplicar migration em produção
-- Testar migration em staging primeiro
-- Usar scripts `.sh` no servidor Linux
-- Verificar colunas após aplicar migration
+- `make start` — wrapper equivalente a `./scripts/run-make.sh start` (ci-safe quick-start)
+- `make apply-migrations` — executa `docker compose run --rm flyway`
+- `make ci-migrate` — roda `./gradlew flywayValidate` e, se passar, `docker compose run --rm flyway` (útil para CI)
+- `make up` — sobe serviços definidos no compose
+- `make clean` — remove containers/volumes usados no dev (CUIDADO: destrutivo)
 
-### ❌ NUNCA:
-- Usar `recreate-database` em produção/staging
-- Aplicar migration sem backup
-- Executar scripts sem ler o código antes
-- Ignorar erros de migration
+Use `make help` para ver o conjunto completo de alvos se o Makefile estiver presente.
 
 ---
 
-## 🆘 Troubleshooting
+## Recomendações e regras importantes
 
-### "Permission denied" ao executar script .sh
+- Sempre faça backup antes de aplicar migrations em staging/produção.
+- Em produção/staging use `ci-migrate` (ou processo CI) e valide `flywayValidate` antes de migrar.
+- Não rode `recreate-database` em produção — é destrutivo.
+- Os scripts PowerShell foram removidos; no Windows use WSL2 para o fluxo Bash.
+
+---
+
+## Verificação rápida (sanity checks)
+
+Com o banco rodando, verifique se a migration foi aplicada:
+
+```bash
+# Listar migrations aplicadas (se você tiver psql localmente):
+docker exec -i $(docker ps -qf "name=gestao-postgres") \
+	psql -U gestao_app_user -d gestao_mensalidades_dev -c "SELECT version, description, installed_on FROM flyway_schema_history ORDER BY installed_rank DESC LIMIT 10;"
+
+# Verificar existência de coluna (exemplo firebase_uid em users)
+docker exec -i $(docker ps -qf "name=gestao-postgres") \
+	psql -U gestao_app_user -d gestao_mensalidades_dev -c "\d+ users"
+```
+
+---
+
+## Troubleshooting comum
+
+- "Permission denied" ao executar script
 
 ```bash
 chmod +x scripts/*.sh
-./scripts/nome-do-script.sh
 ```
 
-### "Container not found"
+- "Container not found" / Postgres não está rodando
 
 ```bash
-# Verificar containers rodando
 docker ps
-
-# Subir postgres
-docker-compose up -d postgres
+docker compose up -d postgres
 ```
 
-### "psql: command not found" (dentro do script)
+- `JAVA_HOME` / `./gradlew` erros
 
-Scripts `.sh` usam Docker, não precisam psql instalado!
+```
+# Gradle wrapper precisa de Java no host quando você roda ./gradlew
+# Para executar a aplicação via Gradle certifique-se que Java está instalado e JAVA_HOME configurado
+echo $JAVA_HOME
+java -version
+```
 
-### Migration já foi aplicada
+- `flywayValidate` falha no CI
 
-Normal! Script detecta e avisa. Use `recreate-database.sh` se quiser começar do zero.
+```
+# Rode localmente: ./gradlew flywayValidate
+# Reveja mensagens e corrija a migration antes de permitir deploy
+```
+
+- Ver logs do flyway/container
+
+```bash
+docker compose logs flyway
+docker compose logs -f postgres
+```
 
 ---
 
-## 📚 Mais Informações
+## Notas finais
 
-- **Boas práticas:** Ver `docs/08-MIGRATIONS-BOAS-PRATICAS.md`
-- **Deploy servidor:** Ver `DEPLOY_SERVIDOR.md`
-- **Aplicação manual:** Ver `COMO_APLICAR_MIGRATION.md`
+- Este README tem como objetivo ser uma referência prática: comandos copy/paste, verificação e ações de recuperação.
+- Se quiser, posso também criar exemplos de comandos para o CI (GitHub Actions/GitLab CI) que usem `make ci-migrate`.
 
----
-
-## 🎓 Resumo
-
-| Script | Windows | Linux | Destrutivo | Uso |
-|--------|---------|-------|------------|-----|
-| `recreate-database` | `.ps1` | `.sh` | ✅ SIM | Dev local |
-| `apply-migration-existing-db` | `.ps1` | `.sh` | ❌ NÃO | Produção |
-| `apply-migration-docker` | `.ps1` | `.sh` | ❌ NÃO | Qualquer |
-| `install-psql` | `.ps1` | ❌ N/A | N/A | Dev Windows |
-| `apply-migration-002` | `.ps1` | ❌ N/A | Depende | Dev Windows |
-
-**Dica:** Em caso de dúvida, use `apply-migration-existing-db`! É seguro! ✅
+``` 
+git clone ...

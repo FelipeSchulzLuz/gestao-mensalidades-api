@@ -347,6 +347,33 @@ Test-NetConnection -ComputerName SEU_IP -Port 54320
 
 ---
 
+## 🧭 Executar Migrations (recomendado)
+
+Este repositório usa Flyway para aplicar migrations de forma reprodutível. Recomendamos usar o wrapper/Makefile para desenvolvimento, que combina cópia do `.env`, execução das migrations e subida da app.
+
+Opções:
+
+- Fluxo padronizado (recomendado):
+
+```bash
+# Torne os scripts executáveis (uma vez)
+chmod +x scripts/*.sh
+
+# Fluxo padronizado (copia .env, sobe infra mínima, aplica migrations e sobe app)
+./scripts/run-make.sh start
+```
+
+- Executar `flyway` diretamente:
+
+```bash
+# Aplica migrations a partir de src/main/resources/db/migration
+docker compose run --rm flyway
+```
+
+Use o fluxo padronizado em desenvolvimento para reduzir erros manuais. Em CI, prefira `make ci-migrate` (que roda `./gradlew flywayValidate` antes de executar Flyway).
+
+---
+
 ## 🔍 Troubleshooting
 
 ### PostgreSQL não inicia
