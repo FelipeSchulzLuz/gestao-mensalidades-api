@@ -1,6 +1,7 @@
 package br.com.gestaomensalidades.gestao_mensalidades_api.application.services;
 
 import br.com.gestaomensalidades.gestao_mensalidades_api.domain.entities.User;
+import br.com.gestaomensalidades.gestao_mensalidades_api.domain.enums.UserRole;
 import br.com.gestaomensalidades.gestao_mensalidades_api.domain.exceptions.UserNotFoundException;
 import br.com.gestaomensalidades.gestao_mensalidades_api.infrastructure.persistence.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import java.time.LocalDateTime;
+import java.util.Optional;
 
 /**
  * Service para operações relacionadas ao usuário autenticado.
@@ -171,5 +174,53 @@ public class UserService {
                 "Acesso negado: " + resourceName + " não pertence à sua organização"
             );
         }
+    }
+
+    // ---- Firebase / external auth helpers (used by controllers) ----
+
+    /**
+     * Checa existência de usuário por firebaseUid.
+     */
+    public boolean existsByFirebaseUid(String firebaseUid) {
+        return userRepository.existsByFirebaseUid(firebaseUid);
+    }
+
+    /**
+     * Busca usuário por email.
+     */
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
+    /**
+     * Busca usuário por firebaseUid.
+     */
+    public Optional<User> findByFirebaseUid(String firebaseUid) {
+        return userRepository.findByFirebaseUid(firebaseUid);
+    }
+
+    /**
+     * Cria um usuário simples a partir de dados do Firebase.
+     * Assumimos validações (email verificado etc.) feitas pelo controller.
+     */
+    public User createFirebaseUser(String firebaseUid, String email, String name, Long organizationId) {
+        User newUser = new User();
+        newUser.setFirebaseUid(firebaseUid);
+        newUser.setEmail(email);
+        newUser.setName(name != null ? name : (email != null ? email.split("@")[0] : ""));
+        newUser.setOrganizationId(organizationId);
+        newUser.setRole(UserRole.USER);
+        newUser.setActive(true);
+        newUser.setCreatedAt(LocalDateTime.now());
+        newUser.setUpdatedAt(LocalDateTime.now());
+        return userRepository.save(newUser);
+    }
+
+    /**
+     * Salva/atualiza um usuário existente (atualiza updatedAt automaticamente).
+     */
+    public User saveUser(User user) {
+        user.setUpdatedAt(LocalDateTime.now());
+        return userRepository.save(user);
     }
 }
