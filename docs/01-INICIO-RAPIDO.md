@@ -41,47 +41,41 @@ Este guia explica como iniciar todos os serviços necessários para desenvolvime
 
 ### 1️⃣ Iniciar Docker no Servidor (192.168.1.12)
 
-Execute **UMA VEZ** para iniciar PostgreSQL, pgAdmin e Redis:
+Recomendado: use o wrapper padronizado que invoca o Makefile para copiar `.env`, subir infra mínima e executar migrations via Flyway.
 
-```powershell
-.\start-dev.ps1
+```bash
+# Torne os scripts executáveis (uma vez)
+chmod +x scripts/*.sh
+
+# Fluxo recomendado (rápido e reprodutível)
+./scripts/run-make.sh start
 ```
 
-**O que este script faz:**
-- ✅ Verifica se Docker está instalado e rodando
-- ✅ Inicia containers: PostgreSQL, pgAdmin, Redis
-- ✅ Verifica saúde dos serviços (health check)
-- ✅ Exibe informações de acesso
-- ✅ Mostra instruções para o próximo passo (Stripe)
+O wrapper faz (resumo):
+- copia `.env.docker` → `.env` (se `.env` não existir)
+- sobe serviços mínimos: `postgres`, `redis`, `pgadmin`
+- executa migrations via Flyway (`docker compose run --rm flyway`)
+- sobe a aplicação (`docker compose up -d app`)
 
-**Saída esperada:**
-```
-==> Iniciando serviços Docker...
-✓ Containers iniciados com sucesso!
+Saída esperada (resumo):
 
-==> Verificando saúde dos serviços...
-PostgreSQL (54320)... ✓
-pgAdmin (8800)... ✓
-Redis (63790)... ✓
+PostgreSQL e Redis iniciados, migrations aplicadas com sucesso, aplicação disponível em `http://localhost:8800` (ou host/porta configurada no `.env`).
 
-==============================================================================
-  Ambiente de Desenvolvimento Iniciado!
-==============================================================================
-
-Acesse os serviços:
-  PostgreSQL:    192.168.1.12:54320
-  pgAdmin:       http://192.168.1.12:8800
-  Redis:         192.168.1.12:63790
-```
+Se precisar executar manualmente, veja a seção "Fluxo manual" no final deste documento.
 
 ---
+
 
 ### 2️⃣ Iniciar Stripe CLI (Máquina Local)
 
 Em um **terminal separado** na sua máquina local:
 
-```powershell
-.\start-stripe.ps1
+```bash
+# Se tiver o script wrapper local (scripts/start-stripe.sh)
+./scripts/start-stripe.sh
+
+# Ou manualmente com Stripe CLI
+stripe listen --forward-to localhost:8800/api/webhooks/stripe
 ```
 
 **O que este script faz:**
@@ -135,14 +129,14 @@ STRIPE_PRODUCT_YEARLY=prod_Sj9inVJYHvyr0M
 
 ### 4️⃣ Iniciar API Spring Boot (Máquina Local)
 
-Em **outro terminal** na sua máquina local:
+Em **outro terminal** na sua máquina local, se preferir rodar a API localmente via Gradle:
 
-```powershell
+```bash
 # Build do projeto
-.\gradlew build
+./gradlew build
 
 # Iniciar API
-.\gradlew bootRun
+./gradlew bootRun
 ```
 
 **Saída esperada:**
@@ -188,7 +182,7 @@ INFO --- Processing Stripe webhook: checkout.session.completed
 ## 🎯 Comandos Rápidos
 
 ### Docker (Servidor)
-```powershell
+```bash
 # Status dos containers
 docker compose ps
 
@@ -206,15 +200,15 @@ docker compose down
 ```
 
 ### Stripe CLI (Local)
-```powershell
+```bash
 # Login no Stripe
 stripe login
 
-# Iniciar listener (script automático)
-.\start-stripe.ps1
+# Iniciar listener (script wrapper)
+./scripts/start-stripe.sh
 
 # Iniciar listener (manual)
-stripe listen --thin-events '*' --forward-thin-to localhost:8800/api/webhooks/stripe
+stripe listen --forward-to localhost:8800/api/webhooks/stripe
 
 # Testar eventos
 stripe trigger checkout.session.completed
@@ -229,21 +223,21 @@ stripe prices list
 ```
 
 ### Gradle (Local)
-```powershell
+```bash
 # Build
-.\gradlew build
+./gradlew build
 
 # Run
-.\gradlew bootRun
+./gradlew bootRun
 
 # Testes
-.\gradlew test
+./gradlew test
 
 # Clean + Build
-.\gradlew clean build
+./gradlew clean build
 
 # Ver dependências
-.\gradlew dependencies
+./gradlew dependencies
 ```
 
 ---
@@ -312,10 +306,9 @@ taskkill /PID <PID> /F
 ## 🎯 Workflow Típico de Desenvolvimento
 
 ### Início do Dia
-1. ✅ Iniciar Docker: `.\start-dev.ps1`
-2. ✅ Iniciar Stripe: `.\start-stripe.ps1` (terminal separado)
-3. ✅ Iniciar API: `.\gradlew bootRun` (terminal separado)
-4. ✅ Começar a codificar!
+1. ✅ Iniciar ambiente: `./scripts/run-make.sh start`
+2. ✅ Iniciar Stripe: `stripe listen --forward-to localhost:8800/api/webhooks/stripe` (terminal separado)
+3. ✅ Começar a codificar! (app já está rodando via wrapper)
 
 ### Durante o Desenvolvimento
 - 💻 Editar código
@@ -332,12 +325,11 @@ taskkill /PID <PID> /F
 
 ## ⚡ Dicas de Produtividade
 
-### Use Windows Terminal com Abas
+### Use Terminal com Abas
 ```
 Tab 1: Git / Comandos gerais
-Tab 2: start-stripe.ps1
-Tab 3: gradlew bootRun
-Tab 4: Logs (docker compose logs -f)
+Tab 2: stripe listen (webhooks)
+Tab 3: docker compose logs -f (logs)
 ```
 
 ### Alias Úteis (PowerShell Profile)

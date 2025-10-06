@@ -50,11 +50,10 @@ Dev 2: "Oi, o que você mudou no banco?"
 
 **✅ COM Migration:**
 ```
-Dev 1: git add database/migrations/002_*.sql
+Dev 1: git add src/main/resources/db/migration/V002__*.sql
 Dev 1: git push
 Dev 2: git pull
-Dev 2: .\scripts\recreate-database.ps1
-Dev 2: ./gradlew bootRun
+Dev 2: ./scripts/run-make.sh start
 ✅ FUNCIONA!
 ```
 
@@ -134,13 +133,13 @@ git commit -m "feat: add phone column to users"
 git push
 
 # 3. Aplicar localmente
-.\scripts\recreate-database.ps1
+./scripts/run-make.sh start
 
 # 4. Atualizar código Java
 # User.java → private String phone;
 
 # 5. Testar
-.\gradlew bootRun
+./gradlew bootRun
 
 # 6. Commitar código
 git add src/
@@ -166,13 +165,14 @@ git add database/migrations/002_add_firebase_auth_support.sql
 git add docker-compose.yml
 git commit -m "feat: add Firebase authentication support - migration 002"
 
-# 2. Aplicar localmente (SEM DADOS? Use recreate!)
-.\scripts\recreate-database.ps1
-# ✅ Rápido (15 segundos)
+# 2. Aplicar localmente (recriar DB + migrations)
+docker compose down -v
+./scripts/run-make.sh start
+# ✅ Rápido (cria DB limpo e aplica todas migrations)
 # ✅ Estado limpo garantido
 
-# 3. Testar aplicação
-.\gradlew bootRun
+# 3. Testar aplicação (já rodando via wrapper)
+docker compose logs -f app
 
 # 4. Commitar código que USA a migration
 git add src/
@@ -198,7 +198,7 @@ git push
 
 **COM Migrations:**
 ```
-✅ Novo dev: git clone → recreate-database.ps1 → pronto!
+✅ Novo dev: git clone → ./scripts/run-make.sh start → pronto!
 ✅ Staging: Sempre sincronizado
 ✅ Produção: Deploy previsível
 ✅ Documentação: Cada migration explica
@@ -212,9 +212,10 @@ git push
 
 **✅ COM migrations:**
 ```bash
-.\scripts\recreate-database.ps1
+docker compose down -v
+./scripts/run-make.sh start
 # ✅ Dropa tudo
-# ✅ Recria com TODAS migrations
+# ✅ Recria com TODAS migrations via Flyway
 # ✅ Estado consistente garantido
 ```
 
@@ -305,7 +306,7 @@ database/
 [ ] 3. Adicionar comentários explicativos
 [ ] 4. git add + commit migration
 [ ] 5. git push
-[ ] 6. Aplicar localmente: recreate-database.ps1
+[ ] 6. Aplicar localmente: ./scripts/run-make.sh start
 [ ] 7. Verificar: SELECT * FROM tabela LIMIT 1;
 [ ] 8. Atualizar código Java
 [ ] 9. Testar: ./gradlew bootRun
@@ -331,7 +332,7 @@ database/
 ### ❓ "Mas não tem dados importantes..."
 
 **Exatamente! Por isso:**
-- ✅ Use `recreate-database.ps1` sem medo
+- ✅ Use `./scripts/run-make.sh start` ou `docker compose down -v && ./scripts/run-make.sh start` sem medo
 - ✅ 15 segundos para banco limpo
 - ✅ Todas migrations aplicadas
 - ✅ Acostuma com workflow correto
@@ -366,13 +367,13 @@ database/
 
 ```bash
 # Commita e aplica! 🎯
-git add database/migrations/002_add_firebase_auth_support.sql
+git add src/main/resources/db/migration/V002__*.sql
 git add docker-compose.yml
 git commit -m "feat: add Firebase authentication support - migration 002"
 git push
 
-.\scripts\recreate-database.ps1
-.\gradlew bootRun
+./scripts/run-make.sh start
+# App já sobe automaticamente!
 ```
 
 🎉 **Parabéns! Você está fazendo do jeito certo!**

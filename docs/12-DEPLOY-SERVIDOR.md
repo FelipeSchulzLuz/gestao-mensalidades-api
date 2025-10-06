@@ -28,13 +28,11 @@ gestao-mensalidades-api/
 ### ❌ NÃO copiar (apenas dev local):
 
 ```
-❌ scripts/*.ps1                   ← Scripts PowerShell (apenas Windows)
+✅ scripts/*.sh                   ← Copiar scripts Bash (run-make.sh, start-with-flyway.sh)
 ❌ build/                          ← Será gerado no servidor
 ❌ .gradle/                        ← Cache local
 ❌ .git/                           ← Opcional (pode copiar se quiser)
 ❌ .idea/                          ← IDE
-❌ *.log                           ← Logs locais
-❌ src/main/resources/serviceAccountKey.json  ← NUNCA COPIAR!
 ```
 
 ### ✅ Copiar (scripts para Linux):
