@@ -73,11 +73,11 @@ public class JwtTokenProvider {
         SecretKey key = getSigningKey();
         
         return Jwts.builder()
-                .setSubject(username)
+                .subject(username)
                 .claim("role", role)
-                .setIssuedAt(now)
-                .setExpiration(expiryDate)
-                .signWith(key, SignatureAlgorithm.HS512)
+                .issuedAt(now)
+                .expiration(expiryDate)
+                .signWith(key, Jwts.SIG.HS512)
                 .compact();
     }
     
