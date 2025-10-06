@@ -29,6 +29,7 @@ import java.util.Optional;
 public class OrganizationService {
 
     private final OrganizationRepository organizationRepository;
+    private final UserService userService;
 
     /**
      * Cria uma nova organização.
@@ -99,17 +100,17 @@ public class OrganizationService {
     }
 
     /**
-     * Lista todas as organizações ativas.
+     * Retorna a organização do usuário autenticado (se ativa).
+     * ⚠️ MULTI-TENANCY: Usuário só pode ver sua própria organização.
      * 
-     * @return lista de organizações ativas
+     * @return organização do usuário autenticado
      */
     @Transactional(readOnly = true)
-    public List<Organization> findAllActive() {
-        log.debug("Finding all active organizations");
-        return organizationRepository.findAll()
-            .stream()
-            .filter(Organization::getIsActive)
-            .toList();
+    public Optional<Organization> getCurrentUserOrganization() {
+        log.debug("Getting current user organization");
+        Long orgId = userService.getCurrentOrganizationId();
+        return organizationRepository.findById(orgId)
+            .filter(Organization::getIsActive);
     }
 
     /**

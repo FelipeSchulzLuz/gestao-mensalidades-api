@@ -32,6 +32,7 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final OrganizationService organizationService;
+    private final UserService userService;
 
     /**
      * Cria um novo produto.
@@ -47,13 +48,14 @@ public class ProductService {
      */
     @Transactional
     public Product create(Product product) {
-        log.info("Creating product: {} for organization: {}", 
-            product.getName(), product.getOrganization().getId());
+        // ✅ MULTI-TENANCY: Forçar organizationId do usuário autenticado
+        Long currentOrgId = userService.getCurrentOrganizationId();
+        log.info("Creating product: {} for organization: {}", product.getName(), currentOrgId);
         
-        // Validar organização
-        Organization organization = organizationService.findById(product.getOrganization().getId())
+        // Validar organização (usa a do usuário autenticado)
+        Organization organization = organizationService.findById(currentOrgId)
             .orElseThrow(() -> new IllegalArgumentException(
-                "Organization not found with ID: " + product.getOrganization().getId()
+                "Organization not found with ID: " + currentOrgId
             ));
         
         if (!organization.getIsActive()) {
@@ -111,18 +113,20 @@ public class ProductService {
     }
 
     /**
-     * Lista produtos ativos de uma organização, filtrados por tipo.
+     * Lista produtos ativos da organização do usuário autenticado, filtrados por tipo.
+     * ⚠️ MULTI-TENANCY: Usa automaticamente a organização do usuário.
      * 
-     * @param organizationId ID da organização
      * @param type tipo de produto (SUBSCRIPTION ou ONE_TIME), null para todos
      * @return lista de produtos
      */
     @Transactional(readOnly = true)
-    public List<Product> findByOrganizationAndType(Long organizationId, ProductType type) {
-        log.debug("Finding products for organization: {} and type: {}", organizationId, type);
+    public List<Product> findByType(ProductType type) {
+        // ✅ MULTI-TENANCY: Usar organizationId do usuário autenticado
+        Long currentOrgId = userService.getCurrentOrganizationId();
+        log.debug("Finding products for organization: {} and type: {}", currentOrgId, type);
         
-        Organization organization = organizationService.findById(organizationId)
-            .orElseThrow(() -> new IllegalArgumentException("Organization not found with ID: " + organizationId));
+        Organization organization = organizationService.findById(currentOrgId)
+            .orElseThrow(() -> new IllegalArgumentException("Organization not found with ID: " + currentOrgId));
         
         if (type == null) {
             return productRepository.findByOrganizationAndIsActive(organization, true);
@@ -132,43 +136,43 @@ public class ProductService {
     }
 
     /**
-     * Lista todos os produtos ativos com organização (JOIN FETCH para performance).
+     * Lista todos os produtos ativos da organização do usuário autenticado.
+     * ⚠️ MULTI-TENANCY: Retorna apenas produtos da organização do usuário.
      * 
      * @return lista de produtos ativos
      */
     @Transactional(readOnly = true)
     public List<Product> findAllActive() {
-        log.debug("Finding all active products");
-        return productRepository.findAll()
-            .stream()
-            .filter(Product::getIsActive)
-            .toList();
+        // ✅ MULTI-TENANCY: Filtrar por organizationId do usuário
+        return findByType(null);
     }
 
     /**
-     * Lista produtos ativos de uma organização.
+     * Lista produtos ativos da organização do usuário autenticado.
+     * ⚠️ MULTI-TENANCY: Retorna apenas produtos da organização do usuário.
      * 
-     * @param organizationId ID da organização
      * @return lista de produtos ativos
      */
     @Transactional(readOnly = true)
-    public List<Product> findByOrganization(Long organizationId) {
-        return findByOrganizationAndType(organizationId, null);
+    public List<Product> findAll() {
+        return findByType(null);
     }
 
     /**
-     * Lista produtos em destaque (featured) de uma organização.
+     * Lista produtos em destaque (featured) da organização do usuário autenticado.
+     * ⚠️ MULTI-TENANCY: Retorna apenas produtos da organização do usuário.
      * 
-     * @param organizationId ID da organização
      * @return lista de produtos em destaque ordenados por displayOrder
      */
     @Transactional(readOnly = true)
-    public List<Product> findFeaturedByOrganization(Long organizationId) {
-        log.debug("Finding featured products for organization: {}", organizationId);
+    public List<Product> findFeatured() {
+        // ✅ MULTI-TENANCY: Usar organizationId do usuário autenticado
+        Long currentOrgId = userService.getCurrentOrganizationId();
+        log.debug("Finding featured products for organization: {}", currentOrgId);
         
         return productRepository.findAll()
             .stream()
-            .filter(p -> p.getOrganization().getId().equals(organizationId))
+            .filter(p -> p.getOrganization().getId().equals(currentOrgId))
             .filter(Product::getIsActive)
             .filter(Product::getIsFeatured)
             .sorted((p1, p2) -> p1.getDisplayOrder().compareTo(p2.getDisplayOrder()))
@@ -176,17 +180,19 @@ public class ProductService {
     }
 
     /**
-     * Conta produtos ativos de uma organização.
+     * Conta produtos ativos da organização do usuário autenticado.
+     * ⚠️ MULTI-TENANCY: Conta apenas produtos da organização do usuário.
      * 
-     * @param organizationId ID da organização
      * @return número de produtos ativos
      */
     @Transactional(readOnly = true)
-    public long countActiveByOrganization(Long organizationId) {
-        log.debug("Counting active products for organization: {}", organizationId);
+    public long countActive() {
+        // ✅ MULTI-TENANCY: Usar organizationId do usuário autenticado
+        Long currentOrgId = userService.getCurrentOrganizationId();
+        log.debug("Counting active products for organization: {}", currentOrgId);
         
-        Organization organization = organizationService.findById(organizationId)
-            .orElseThrow(() -> new IllegalArgumentException("Organization not found with ID: " + organizationId));
+        Organization organization = organizationService.findById(currentOrgId)
+            .orElseThrow(() -> new IllegalArgumentException("Organization not found with ID: " + currentOrgId));
         
         return productRepository.countByOrganizationAndIsActive(organization, true);
     }

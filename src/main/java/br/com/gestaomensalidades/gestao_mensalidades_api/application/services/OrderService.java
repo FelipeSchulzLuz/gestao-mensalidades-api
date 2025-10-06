@@ -35,8 +35,7 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final OrganizationService organizationService;
-    // UserService será necessário quando implementarmos validação de usuário
-    // private final UserService userService;
+    private final UserService userService;
 
     /**
      * Cria um novo pedido.
@@ -53,13 +52,16 @@ public class OrderService {
      */
     @Transactional
     public Order create(Order order) {
-        log.info("Creating order for user: {} in organization: {}", 
-            order.getUser().getId(), order.getOrganization().getId());
+        // ✅ MULTI-TENANCY: Forçar organizationId e userId do usuário autenticado
+        Long currentOrgId = userService.getCurrentOrganizationId();
+        Long currentUserId = userService.getCurrentUserId();
         
-        // Validar organização
-        Organization organization = organizationService.findById(order.getOrganization().getId())
+        log.info("Creating order for user: {} in organization: {}", currentUserId, currentOrgId);
+        
+        // Validar organização (usa a do usuário autenticado)
+        Organization organization = organizationService.findById(currentOrgId)
             .orElseThrow(() -> new IllegalArgumentException(
-                "Organization not found with ID: " + order.getOrganization().getId()
+                "Organization not found with ID: " + currentOrgId
             ));
         
         if (!organization.getIsActive()) {
@@ -123,56 +125,68 @@ public class OrderService {
     }
 
     /**
-     * Lista pedidos de um usuário, filtrados por status.
+     * Lista pedidos do usuário autenticado, filtrados por status.
+     * ✅ MULTI-TENANCY: Usa getCurrentUserId() e getCurrentOrganizationId()
      * 
-     * @param userId ID do usuário
      * @param status status do pedido (null para todos)
-     * @return lista de pedidos
+     * @return lista de pedidos do usuário autenticado
      */
     @Transactional(readOnly = true)
-    public List<Order> findByUserAndStatus(Long userId, OrderStatus status) {
-        log.debug("Finding orders for user: {} with status: {}", userId, status);
+    public List<Order> findByStatus(OrderStatus status) {
+        // ✅ MULTI-TENANCY: Obter userId e organizationId do contexto autenticado
+        Long currentUserId = userService.getCurrentUserId();
+        Long currentOrgId = userService.getCurrentOrganizationId();
         
-        // TODO: Idealmente deveria validar se o user existe usando UserService.findById()
+        log.debug("Finding orders for user: {} in org: {} with status: {}", 
+            currentUserId, currentOrgId, status);
         
         return orderRepository.findAll()
             .stream()
-            .filter(o -> o.getUser().getId().equals(userId))
+            .filter(o -> o.getUser().getId().equals(currentUserId))
+            .filter(o -> o.getOrganization().getId().equals(currentOrgId))
             .filter(o -> status == null || o.getStatus() == status)
             .sorted((o1, o2) -> o2.getCreatedAt().compareTo(o1.getCreatedAt()))
             .toList();
     }
 
     /**
-     * Lista todos os pedidos de um usuário.
+     * Lista todos os pedidos do usuário autenticado.
+     * ✅ MULTI-TENANCY: Usa getCurrentUserId() e getCurrentOrganizationId()
      * 
-     * @param userId ID do usuário
-     * @return lista de pedidos ordenados por data de criação (mais recente primeiro)
+     * @return lista de pedidos do usuário autenticado ordenados por data (mais recente primeiro)
      */
     @Transactional(readOnly = true)
-    public List<Order> findByUser(Long userId) {
-        log.debug("Finding all orders for user: {}", userId);
+    public List<Order> findAllMyOrders() {
+        // ✅ MULTI-TENANCY: Obter userId e organizationId do contexto autenticado
+        Long currentUserId = userService.getCurrentUserId();
+        Long currentOrgId = userService.getCurrentOrganizationId();
+        
+        log.debug("Finding all orders for user: {} in org: {}", currentUserId, currentOrgId);
         
         return orderRepository.findAll()
             .stream()
-            .filter(o -> o.getUser().getId().equals(userId))
+            .filter(o -> o.getUser().getId().equals(currentUserId))
+            .filter(o -> o.getOrganization().getId().equals(currentOrgId))
             .sorted((o1, o2) -> o2.getCreatedAt().compareTo(o1.getCreatedAt()))
             .toList();
     }
 
     /**
-     * Lista pedidos de uma organização.
+     * Lista todos os pedidos da organização do usuário autenticado.
+     * ✅ MULTI-TENANCY: Usa getCurrentOrganizationId()
      * 
-     * @param organizationId ID da organização
-     * @return lista de pedidos
+     * @return lista de pedidos da organização ordenados por data (mais recente primeiro)
      */
     @Transactional(readOnly = true)
-    public List<Order> findByOrganization(Long organizationId) {
-        log.debug("Finding orders for organization: {}", organizationId);
+    public List<Order> findAllOrganizationOrders() {
+        // ✅ MULTI-TENANCY: Obter organizationId do contexto autenticado
+        Long currentOrgId = userService.getCurrentOrganizationId();
+        
+        log.debug("Finding all orders for organization: {}", currentOrgId);
         
         return orderRepository.findAll()
             .stream()
-            .filter(o -> o.getOrganization().getId().equals(organizationId))
+            .filter(o -> o.getOrganization().getId().equals(currentOrgId))
             .sorted((o1, o2) -> o2.getCreatedAt().compareTo(o1.getCreatedAt()))
             .toList();
     }
@@ -319,37 +333,43 @@ public class OrderService {
     }
 
     /**
-     * Calcula a receita total de uma organização em um período.
+     * Calcula a receita total da organização do usuário autenticado em um período.
      * Considera apenas pedidos com status PAID.
+     * ✅ MULTI-TENANCY: Usa getCurrentOrganizationId()
      * 
-     * @param organizationId ID da organização
      * @param startDate data inicial
      * @param endDate data final
      * @return receita total no período
      */
     @Transactional(readOnly = true)
-    public BigDecimal calculateRevenue(Long organizationId, LocalDateTime startDate, LocalDateTime endDate) {
-        log.debug("Calculating revenue for organization {} between {} and {}", 
-            organizationId, startDate, endDate);
+    public BigDecimal calculateRevenue(LocalDateTime startDate, LocalDateTime endDate) {
+        // ✅ MULTI-TENANCY: Obter organizationId do contexto autenticado
+        Long currentOrgId = userService.getCurrentOrganizationId();
         
-        Organization organization = organizationService.findById(organizationId)
-            .orElseThrow(() -> new IllegalArgumentException("Organization not found with ID: " + organizationId));
+        log.debug("Calculating revenue for organization {} between {} and {}", 
+            currentOrgId, startDate, endDate);
+        
+        Organization organization = organizationService.findById(currentOrgId)
+            .orElseThrow(() -> new IllegalArgumentException("Organization not found with ID: " + currentOrgId));
         
         return orderRepository.calculateTotalRevenue(organization, startDate, endDate);
     }
 
     /**
-     * Calcula a receita total de uma organização (todos os tempos).
+     * Calcula a receita total da organização do usuário autenticado (todos os tempos).
+     * ✅ MULTI-TENANCY: Usa getCurrentOrganizationId()
      * 
-     * @param organizationId ID da organização
      * @return receita total
      */
     @Transactional(readOnly = true)
-    public BigDecimal calculateTotalRevenue(Long organizationId) {
-        log.debug("Calculating total revenue for organization {}", organizationId);
+    public BigDecimal calculateTotalRevenue() {
+        // ✅ MULTI-TENANCY: Obter organizationId do contexto autenticado
+        Long currentOrgId = userService.getCurrentOrganizationId();
         
-        Organization organization = organizationService.findById(organizationId)
-            .orElseThrow(() -> new IllegalArgumentException("Organization not found with ID: " + organizationId));
+        log.debug("Calculating total revenue for organization {}", currentOrgId);
+        
+        Organization organization = organizationService.findById(currentOrgId)
+            .orElseThrow(() -> new IllegalArgumentException("Organization not found with ID: " + currentOrgId));
         
         // Usar LocalDateTime.MIN e MAX para pegar todos os pedidos
         return orderRepository.calculateTotalRevenue(
@@ -360,17 +380,20 @@ public class OrderService {
     }
 
     /**
-     * Conta pedidos por status em uma organização.
+     * Conta pedidos por status na organização do usuário autenticado.
+     * ✅ MULTI-TENANCY: Usa getCurrentOrganizationId()
      * 
-     * @param organizationId ID da organização
      * @param status status a contar
      * @return número de pedidos
      */
     @Transactional(readOnly = true)
-    public long countByOrganizationAndStatus(Long organizationId, OrderStatus status) {
-        log.debug("Counting orders for organization {} with status {}", organizationId, status);
+    public long countByStatus(OrderStatus status) {
+        // ✅ MULTI-TENANCY: Obter organizationId do contexto autenticado
+        Long currentOrgId = userService.getCurrentOrganizationId();
         
-        return findByOrganization(organizationId)
+        log.debug("Counting orders for organization {} with status {}", currentOrgId, status);
+        
+        return findAllOrganizationOrders()
             .stream()
             .filter(o -> o.getStatus() == status)
             .count();

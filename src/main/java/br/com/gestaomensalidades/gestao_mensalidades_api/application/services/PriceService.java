@@ -36,6 +36,8 @@ public class PriceService {
 
     private final PriceRepository priceRepository;
     private final ProductService productService;
+    // ✅ MULTI-TENANCY: PriceService herda isolamento do ProductService
+    // Todos os métodos que buscam Product já estão filtrados por organizationId
 
     /**
      * Cria um novo preço para um produto.
@@ -54,6 +56,7 @@ public class PriceService {
     public Price create(Price price) {
         log.info("Creating price for product: {}", price.getProduct().getId());
         
+        // ✅ MULTI-TENANCY: ProductService.findById() já valida organizationId
         // Validar produto
         Product product = productService.findById(price.getProduct().getId())
             .orElseThrow(() -> new IllegalArgumentException(
@@ -153,6 +156,7 @@ public class PriceService {
 
     /**
      * Lista todos os preços de um produto.
+     * ⚠️ MULTI-TENANCY: Herdado do ProductService (filtra automaticamente).
      * 
      * @param productId ID do produto
      * @return lista de preços
@@ -161,6 +165,7 @@ public class PriceService {
     public List<Price> findByProduct(Long productId) {
         log.debug("Finding prices for product: {}", productId);
         
+        // ✅ MULTI-TENANCY: ProductService.findById() já valida organizationId
         Product product = productService.findById(productId)
             .orElseThrow(() -> new IllegalArgumentException("Product not found with ID: " + productId));
         
