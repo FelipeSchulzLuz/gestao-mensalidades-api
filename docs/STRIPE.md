@@ -5,7 +5,7 @@
 >
 > 🔄 **Arquitetura Híbrida:** Sistema suporta `subscription` (assinaturas) E `payment` (e-commerce)  
 > 📅 **Migration 003:** Aplicada em 2025-10-06 - Novas tabelas: organizations, products, prices, orders  
-> 📚 **Documentação:** Ver [17-ARQUITETURA-HIBRIDA.md](./17-ARQUITETURA-HIBRIDA.md) para detalhes
+> 📚 **Documentação:** Ver [ARQUITETURA-HIBRIDA.md](./ARQUITETURA-HIBRIDA.md) para detalhes
 
 ## 📋 Índice
 
@@ -264,7 +264,7 @@ stripe prices create \
 ## � Checkout Dual (Subscription + Payment)
 
 > ✅ **Implementado na Migration 003** (2025-10-06)  
-> 📖 **Documentação completa:** [17-ARQUITETURA-HIBRIDA.md](./17-ARQUITETURA-HIBRIDA.md)
+> 📖 **Documentação completa:** [ARQUITETURA-HIBRIDA.md](./ARQUITETURA-HIBRIDA.md)
 
 ### Conceito
 

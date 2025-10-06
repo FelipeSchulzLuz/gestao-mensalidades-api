@@ -39,11 +39,12 @@ Progresso Total: 33.3% (5/15 fases, Fase 7 em 50%)
 
 ## 📖 Documentação de Referência
 
-- `docs/17-ARQUITETURA-HIBRIDA.md` - Arquitetura Products + Prices (atual)
-- `docs/STATUS-GERAL.md` - Status consolidado e progresso do projeto
-- `docs/04-STRIPE.md` - Guia completo do Stripe CLI e webhooks
-- `docs/03-DOCKER.md` - Instruções para rodar PostgreSQL, pgAdmin, Redis
-- `docs/11-CREDENCIAIS.md` - Todas credenciais e acessos (protegido no .gitignore)
+- `docs/INDEX.md` - Índice completo de toda documentação
+- `docs/ARQUITETURA-HIBRIDA.md` - Arquitetura Products + Prices (atual)
+- `docs/PROJECT-STATUS.md` - Status consolidado e progresso do projeto (80% backend)
+- `docs/STRIPE.md` - Guia completo do Stripe CLI e webhooks
+- `docs/DOCKER.md` - Instruções para rodar PostgreSQL, pgAdmin, Redis
+- `docs/CREDENCIAIS.md` - Todas credenciais e acessos (protegido no .gitignore)
 
 ---
 
@@ -56,7 +57,7 @@ Progresso Total: 33.3% (5/15 fases, Fase 7 em 50%)
 - [x] Habilitar Hibernate DDL auto (validate em prod) ✅
 - [x] Criar script de inicialização do banco (database/init.sql) ✅
 - [x] Criar docker-compose.yml com PostgreSQL, pgAdmin e Redis ✅
-- [x] Documentar setup do Docker (docs/03-DOCKER.md) ✅
+- [x] Documentar setup do Docker (docs/DOCKER.md) ✅
 - [x] Configurar portas não convencionais para evitar conflitos ✅
 - [ ] Configurar migrations com Flyway ou Liquibase (Opcional - MVP usa DDL auto) Visão Geral
 Este checklist detalha todos os passos necessários para desenvolver o sistema de gestão de mensalidades seguindo as melhores práticas do Stripe e padrões enterprise de grandes empresas.
@@ -205,7 +206,7 @@ Este checklist detalha todos os passos necessários para desenvolver o sistema d
 > - Flags de controle (isActive, isFeatured, displayOrder)
 > - Sincronização (stripePriceId, stripeProductId)
 > 
-> 📖 Consulte `docs/17-ARQUITETURA-HIBRIDA.md` para arquitetura Products + Prices
+> 📖 Consulte `docs/ARQUITETURA-HIBRIDA.md` para arquitetura Products + Prices
 
 ### 2.3 Repositories
 - [x] Criar `UserRepository extends JpaRepository` ✅
@@ -452,7 +453,7 @@ A Fase 3 já implementou todo o módulo de autenticação seguindo Clean Archite
 
 > ⚠️ **IMPORTANTE:** Esta fase foi renomeada de "Módulo de Planos" para "Products + Prices"  
 > 📅 **Migration 003:** Aplicada em 2025-10-06 04:30:58 ✅  
-> 📚 **Referência:** Ver [17-ARQUITETURA-HIBRIDA.md](./17-ARQUITETURA-HIBRIDA.md)  
+> 📚 **Referência:** Ver [ARQUITETURA-HIBRIDA.md](./ARQUITETURA-HIBRIDA.md)  
 > 🎯 **Objetivo:** Implementar entidades Java correspondentes às tabelas do banco
 
 ### 7.1 DTOs Públicos (Frontend)
@@ -905,7 +906,7 @@ A Fase 3 já implementou todo o módulo de autenticação seguindo Clean Archite
   ```
 - [ ] Verificar logs da aplicação para cada evento
 - [ ] Validar que dados foram atualizados no banco corretamente
-- [ ] Consultar `docs/04-STRIPE.md` para guia completo
+- [ ] Consultar `docs/STRIPE.md` para guia completo
 
 ### 10.5 Idempotência e Logs
 - [ ] Criar tabela `ProcessedWebhookEvent` (id do evento Stripe)
@@ -1041,17 +1042,17 @@ A Fase 3 já implementou todo o módulo de autenticação seguindo Clean Archite
   - Como configurar webhooks com Stripe CLI
   - Estrutura do projeto (Clean Architecture)
   - Endpoints disponíveis (link para Swagger)
-  - Arquitetura de gerenciamento de planos (link para docs/17-ARQUITETURA-HIBRIDA.md)
+  - Arquitetura de gerenciamento de planos (link para docs/ARQUITETURA-HIBRIDA.md)
 
 ### 13.3 Documentação Stripe
-- [ ] Documentar IDs necessários (prices, products) ✅ (JÁ FEITO - ver 11-CREDENCIAIS.md)
+- [ ] Documentar IDs necessários (prices, products) ✅ (JÁ FEITO - ver CREDENCIAIS.md)
 - [ ] Documentar configuração do Customer Portal
-- [ ] Criar guia de troubleshooting de webhooks ✅ (JÁ FEITO - ver docs/04-STRIPE.md)
-- [ ] Documentar fluxo completo de desenvolvimento local ✅ (JÁ FEITO - ver docs/04-STRIPE.md)
-- [ ] Documentar comandos do Stripe CLI ✅ (JÁ FEITO - ver docs/04-STRIPE.md)
+- [ ] Criar guia de troubleshooting de webhooks ✅ (JÁ FEITO - ver docs/STRIPE.md)
+- [ ] Documentar fluxo completo de desenvolvimento local ✅ (JÁ FEITO - ver docs/STRIPE.md)
+- [ ] Documentar comandos do Stripe CLI ✅ (JÁ FEITO - ver docs/STRIPE.md)
 
 ### 13.4 Documentação Adicional
-- [ ] Atualizar `docs/17-ARQUITETURA-HIBRIDA.md` com implementação completa Products+Prices
+- [x] Atualizar `docs/ARQUITETURA-HIBRIDA.md` com implementação completa Products+Prices ✅
 - [ ] Criar diagramas de fluxo (opcional)
   - Fluxo de registro → checkout → webhook
   - Fluxo de criação de plano (admin) → Stripe → banco
@@ -1232,10 +1233,10 @@ A Fase 3 já implementou todo o módulo de autenticação seguindo Clean Archite
 - [ ] README completo com instruções claras
 - [ ] Swagger UI acessível em `/swagger-ui.html`
 - [ ] Variáveis de ambiente documentadas ✅ (JÁ FEITO - .env.example)
-- [ ] Guia de desenvolvimento local ✅ (JÁ FEITO - docs/04-STRIPE.md)
-- [ ] Guia Docker ✅ (JÁ FEITO - docs/03-DOCKER.md)
-- [ ] Arquitetura de planos documentada ✅ (JÁ FEITO - docs/17-ARQUITETURA-HIBRIDA.md)
-- [ ] Credenciais e senhas documentadas ✅ (JÁ FEITO - 11-CREDENCIAIS.md)
+- [ ] Guia de desenvolvimento local ✅ (JÁ FEITO - docs/STRIPE.md)
+- [ ] Guia Docker ✅ (JÁ FEITO - docs/DOCKER.md)
+- [ ] Arquitetura de planos documentada ✅ (JÁ FEITO - docs/ARQUITETURA-HIBRIDA.md)
+- [ ] Credenciais e senhas documentadas ✅ (JÁ FEITO - CREDENCIAIS.md)
 - [ ] Guia de deploy criado
 
 ### Performance
