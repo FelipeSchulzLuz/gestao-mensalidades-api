@@ -137,7 +137,7 @@ jobs:
       
       - name: 💬 Comment PR about docs
         if: steps.docs_check.outputs.has_docs_warning == 'true'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             github.rest.issues.createComment({
