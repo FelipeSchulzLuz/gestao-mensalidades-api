@@ -1,4 +1,13 @@
-# 🏗️ Arquitetura do Sistema - Gestão de Mensalidades API
+# > **📅 Última atualização:** 2025-10-06  
+> **📚 Complemento:** Ver [17-ARQUITETURA-HIBRIDA.md](./17-ARQUITETURA-HIBRIDA.md) para arquitetura Products + Prices  
+> **✅ Migration 003:** Aplicada com sucesso em 2025-10-06 04:30:58
+
+---
+
+## ⚡ Mudança Arquitetural Importante
+
+> 🔄 **Outubro 2025:** Sistema evoluiu de **Planos** para **Products + Prices**  
+> ✅ **Banco de Dados:** Nova estrutura aplicada via Migration 003itetura do Sistema - Gestão de Mensalidades API
 
 > **📅 Última atualização:** 2025-10-05  
 > **📖 Complemento:** Ver [17-ARQUITETURA-HIBRIDA.md](./17-ARQUITETURA-HIBRIDA.md) para arquitetura Products + Prices
@@ -97,12 +106,17 @@ O sistema agora suporta **dois modelos de negócio** na mesma plataforma:
 
 ### Modelo de Dados Atualizado
 
+> ✅ **Status do Banco:** Todas as tabelas abaixo foram criadas via Migration 003  
+> 📅 **Data:** 2025-10-06 04:30:58  
+> 🔍 **Validação:** `SELECT * FROM flyway_schema_history WHERE version = '3'`
+
 ```
 ┌────────────────────────────────────────────────────────────┐
-│                       ORGANIZATION                          │
+│                 ORGANIZATION (✅ CRIADA)                    │
 │  ┌──────────────────────────────────────────────────────┐ │
 │  │ id, name, commerce_mode (SUBSCRIPTIONS/ECOMMERCE/   │ │
 │  │ HYBRID), stripe_account_id                           │ │
+│  │ 📊 Org padrão: 'Organização Padrão' (slug: default) │ │
 │  └──────────────────────────────────────────────────────┘ │
 └────────────────────────┬───────────────────────────────────┘
                          │

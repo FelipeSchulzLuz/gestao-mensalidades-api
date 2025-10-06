@@ -2,6 +2,10 @@
 
 > **💡 IMPORTANTE:** O Stripe CLI roda na sua **máquina local** (não no servidor Docker).  
 > Use o comando `stripe listen --forward-to localhost:8800/api/webhooks/stripe` para webhooks locais.
+>
+> 🔄 **Arquitetura Híbrida:** Sistema suporta `subscription` (assinaturas) E `payment` (e-commerce)  
+> 📅 **Migration 003:** Aplicada em 2025-10-06 - Novas tabelas: organizations, products, prices, orders  
+> 📚 **Documentação:** Ver [17-ARQUITETURA-HIBRIDA.md](./17-ARQUITETURA-HIBRIDA.md) para detalhes
 
 ## 📋 Índice
 
@@ -257,7 +261,110 @@ stripe prices create \
 
 ---
 
-## 🛠️ Comandos Úteis
+## � Checkout Dual (Subscription + Payment)
+
+> ✅ **Implementado na Migration 003** (2025-10-06)  
+> 📖 **Documentação completa:** [17-ARQUITETURA-HIBRIDA.md](./17-ARQUITETURA-HIBRIDA.md)
+
+### Conceito
+
+O sistema agora suporta **dois tipos de checkout** na mesma plataforma:
+
+| Tipo | Mode | Uso | Tabela de Destino |
+|------|------|-----|-------------------|
+| **Assinaturas** | `subscription` | SaaS, mensalidades recorrentes | `subscriptions` |
+| **E-commerce** | `payment` | Vendas únicas, produtos avulsos | `orders` |
+
+### Criar Checkout Session - Assinatura
+
+```bash
+# Checkout para assinatura (recorrente)
+stripe checkout sessions create \
+  --mode subscription \
+  --success-url "http://localhost:3000/success?session_id={CHECKOUT_SESSION_ID}" \
+  --cancel-url "http://localhost:3000/cancel" \
+  --line-items[0][price]=price_xxxxxxxxxxxxx \
+  --line-items[0][quantity]=1 \
+  --customer=cus_xxxxxxxxxxxxx
+```
+
+**Webhook esperado:** `checkout.session.completed` com `mode="subscription"`  
+**Ação:** Sistema cria registro na tabela `subscriptions`
+
+### Criar Checkout Session - E-commerce
+
+```bash
+# Checkout para pagamento único
+stripe checkout sessions create \
+  --mode payment \
+  --success-url "http://localhost:3000/success?session_id={CHECKOUT_SESSION_ID}" \
+  --cancel-url "http://localhost:3000/cancel" \
+  --line-items[0][price]=price_xxxxxxxxxxxxx \
+  --line-items[0][quantity]=2 \
+  --customer=cus_xxxxxxxxxxxxx
+```
+
+**Webhook esperado:** `checkout.session.completed` com `mode="payment"`  
+**Ação:** Sistema cria registro na tabela `orders`
+
+### Verificar Tipo de Checkout Session
+
+```bash
+# Ver detalhes da session (incluindo o 'mode')
+stripe checkout sessions retrieve cs_test_xxxxxxxxxxxxx
+```
+
+Resposta incluirá:
+```json
+{
+  "id": "cs_test_xxxxxxxxxxxxx",
+  "mode": "subscription",  // ou "payment"
+  "customer": "cus_xxxxxxxxxxxxx",
+  "payment_status": "paid",
+  ...
+}
+```
+
+### Testar Webhooks por Tipo
+
+```bash
+# Simular conclusão de checkout de assinatura
+stripe trigger checkout.session.completed --override checkout_session:mode=subscription
+
+# Simular conclusão de checkout de e-commerce
+stripe trigger checkout.session.completed --override checkout_session:mode=payment
+```
+
+### Exemplo de Handler de Webhook (Java)
+
+```java
+@PostMapping("/webhooks/stripe")
+public ResponseEntity<Void> handleStripeWebhook(
+    @RequestBody String payload,
+    @RequestHeader("Stripe-Signature") String signature
+) {
+    Event event = Webhook.constructEvent(payload, signature, webhookSecret);
+    
+    if ("checkout.session.completed".equals(event.getType())) {
+        Session session = extractSession(event);
+        
+        // Decisão baseada no mode da session
+        if ("subscription".equals(session.getMode())) {
+            log.info("Processando assinatura: {}", session.getId());
+            subscriptionService.createFromCheckout(session);
+        } else if ("payment".equals(session.getMode())) {
+            log.info("Processando pedido: {}", session.getId());
+            orderService.createFromCheckout(session);
+        }
+    }
+    
+    return ResponseEntity.ok().build();
+}
+```
+
+---
+
+## �🛠️ Comandos Úteis
 
 ### Customers
 
