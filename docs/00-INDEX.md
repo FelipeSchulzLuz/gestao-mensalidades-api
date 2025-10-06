@@ -13,11 +13,11 @@ Este documento serve como índice centralizado de toda a documentação do proje
 1. **README.md** (raiz) - Visão geral do projeto
 2. **01-INICIO-RAPIDO.md** - Configure e rode o projeto
 3. **02-ARQUITETURA.md** - Entenda a arquitetura
-4. **CHECKLIST_DESENVOLVIMENTO.md** (raiz) - Veja as tarefas
+4. **09-CHECKLIST-DESENVOLVIMENTO.md** - Veja as tarefas
 
 ### Para Desenvolvimento Ativo
 
-1. **CHECKLIST_DESENVOLVIMENTO.md** - Tarefas pendentes
+1. **09-CHECKLIST-DESENVOLVIMENTO.md** - Tarefas pendentes
 2. **99-STATUS.md** - Progresso atual
 3. **05-PLANOS.md** - Arquitetura de planos (próxima implementação)
 4. **04-STRIPE.md** - Referência de integração Stripe
@@ -47,34 +47,6 @@ Este documento serve como índice centralizado de toda a documentação do proje
 **Quando usar:** Primeira vez no projeto, compartilhar com novos membros.  
 **Conteúdo:** Stack tecnológica, comandos rápidos, estrutura, status.
 
-#### ✅ [CHECKLIST_DESENVOLVIMENTO.md](../CHECKLIST_DESENVOLVIMENTO.md)
-**Descrição:** Checklist completo das 14 fases de desenvolvimento.  
-**Quando usar:** Planejar sprints, verificar progresso, identificar gaps.  
-**Conteúdo:** 14 fases detalhadas, estimativas, dependências, status visual.
-
-#### 🔄 [PLANO_MIGRACAO.md](../PLANO_MIGRACAO.md) ⚠️ **MIGRAÇÃO FIREBASE**
-**Descrição:** **Plano detalhado de migração Java/PostgreSQL → Firebase**.  
-**Quando usar:** **ANTES** de iniciar desenvolvimento Firebase.  
-**Conteúdo:**
-- Análise de impacto (componentes descartados vs. criados)
-- Estratégia de migração (branch separada recomendada)
-- 8 fases de implementação (checklist completo)
-- Estrutura de arquivos (nova)
-- Comparação antes vs. depois (código, tempo, custo)
-- Riscos e mitigações
-- Análise de custos ($55-115/mês → $0.68/mês)
-- Recursos de aprendizado
-
-**Tempo de leitura:** 40 minutos  
-**Impacto:** 🔴 **CRÍTICO** - Substitui CHECKLIST_DESENVOLVIMENTO.md  
-**Status:** 🟡 Aguardando aprovação
-
-#### 🔐 CREDENCIAIS.md *(não commitado)*
-**Descrição:** Credenciais sensíveis (senhas, chaves, tokens).  
-**Quando usar:** Configuração local, onboarding de desenvolvedores.  
-**Conteúdo:** Senhas PostgreSQL, chaves Stripe, JWT secrets.  
-**⚠️ NUNCA commite este arquivo!**
-
 #### 📝 .env.example
 **Descrição:** Template de variáveis de ambiente.  
 **Quando usar:** Primeira configuração, referência de variáveis necessárias.  
@@ -96,6 +68,78 @@ Este documento serve como índice centralizado de toda a documentação do proje
 
 **Tempo de leitura:** 10 minutos  
 **Pré-requisitos:** Docker, Stripe CLI, Java 21
+
+#### 🏗️ [02-ARQUITETURA.md](./02-ARQUITETURA.md)
+**Descrição:** Arquitetura completa do sistema (Clean Architecture).  
+**Quando usar:** Entender estrutura, planejar features, code review.
+
+#### 🐳 [03-DOCKER.md](./03-DOCKER.md)
+**Descrição:** Configuração e uso do Docker no projeto.  
+**Quando usar:** Setup infraestrutura, troubleshooting containers.
+
+#### 💳 [04-STRIPE.md](./04-STRIPE.md)
+**Descrição:** Integração completa com Stripe (webhooks, CLI, API).  
+**Quando usar:** Implementar pagamentos, debugar webhooks.
+
+#### 📋 [05-PLANOS.md](./05-PLANOS.md)
+**Descrição:** Arquitetura de gerenciamento de planos e assinaturas.  
+**Quando usar:** Implementar CRUD de planos, sincronização com Stripe.
+
+#### 🔥 [06-ARQUITETURA-FIREBASE.md](./06-ARQUITETURA-FIREBASE.md)
+**Descrição:** Arquitetura alternativa usando Firebase (REFERÊNCIA).  
+**Quando usar:** Comparação de arquiteturas, futuras migrações.  
+**⚠️ Apenas referência - Projeto usa Java/Spring Boot**
+
+#### 🔐 [07-AUTENTICACAO-HIBRIDA.md](./07-AUTENTICACAO-HIBRIDA.md)
+**Descrição:** Sistema de autenticação JWT + Firebase Auth.  
+**Quando usar:** Entender fluxo de autenticação, implementar endpoints.
+
+#### 🗄️ [08-MIGRATIONS-BOAS-PRATICAS.md](./08-MIGRATIONS-BOAS-PRATICAS.md)
+**Descrição:** Guia completo sobre database migrations.  
+**Quando usar:** Criar migrations, aplicar mudanças de schema.  
+**Conteúdo:** Filosofia, workflows, boas práticas, ferramentas.
+
+#### ✅ [09-CHECKLIST-DESENVOLVIMENTO.md](./09-CHECKLIST-DESENVOLVIMENTO.md)
+**Descrição:** Checklist completo das 14 fases de desenvolvimento.  
+**Quando usar:** Planejar sprints, verificar progresso, identificar gaps.  
+**Conteúdo:** 14 fases detalhadas, estimativas, dependências, status.
+
+#### 📝 [10-COMO-APLICAR-MIGRATION.md](./10-COMO-APLICAR-MIGRATION.md)
+**Descrição:** Guia visual passo a passo para aplicar migrations.  
+**Quando usar:** Aplicar migration manualmente via DBeaver/pgAdmin.  
+**Conteúdo:** Screenshots, troubleshooting, verificação.
+
+#### 🔐 [11-CREDENCIAIS.md](./11-CREDENCIAIS.md) *(não commitado)*
+**Descrição:** Credenciais sensíveis (senhas, chaves, tokens).  
+**Quando usar:** Configuração local, onboarding de desenvolvedores.  
+**Conteúdo:** Senhas PostgreSQL, chaves Stripe, JWT secrets.  
+**⚠️ NUNCA commite este arquivo!**
+
+#### 🚀 [12-DEPLOY-SERVIDOR.md](./12-DEPLOY-SERVIDOR.md)
+**Descrição:** Guia completo de deploy em servidor de produção.  
+**Quando usar:** Deploy inicial, atualização de produção.  
+**Conteúdo:** Arquivos para copiar, .env produção, passos Docker, segurança.
+
+#### 🔄 [13-HYBRID-AUTH-STATUS.md](./13-HYBRID-AUTH-STATUS.md)
+**Descrição:** Status da implementação de autenticação híbrida.  
+**Quando usar:** Verificar progresso de implementação Firebase Auth.
+
+#### 📦 [14-IMPLEMENTACAO-COMPLETA.md](./14-IMPLEMENTACAO-COMPLETA.md)
+**Descrição:** Resumo da implementação completa do sistema.  
+**Quando usar:** Visão geral do que foi implementado, documentação de referência.
+
+#### 🔄 [15-PLANO-MIGRACAO.md](./15-PLANO-MIGRACAO.md) ⚠️ **REFERÊNCIA**
+**Descrição:** Plano detalhado de migração Java/PostgreSQL → Firebase.  
+**Quando usar:** Apenas referência - Projeto continua com Java.  
+**⚠️ Este documento é histórico/referência**
+
+#### 📊 [16-PROGRESSO.md](./16-PROGRESSO.md)
+**Descrição:** Tracking de progresso e próximos passos.  
+**Quando usar:** Reuniões de status, planejamento de sprints.
+
+#### 📊 [99-STATUS.md](./99-STATUS.md)
+**Descrição:** Status atual do projeto e próximos passos.  
+**Quando usar:** Check rápido de progresso, definir prioridades.
 
 ---
 
@@ -321,17 +365,28 @@ Este documento serve como índice centralizado de toda a documentação do proje
 
 | Documento | Status | Última Atualização |
 |-----------|--------|--------------------|
-| README.md | ✅ Completo | 2025-01-05 |
-| CHECKLIST_DESENVOLVIMENTO.md | ✅ Completo | 2025-01-05 |
-| 00-INDEX.md | ✅ Completo | 2025-01-05 |
+| README.md | ✅ Completo | 2025-10-05 |
+| 00-INDEX.md | ✅ Atualizado | 2025-10-05 |
 | 01-INICIO-RAPIDO.md | ✅ Completo | 2025-01-04 |
 | 02-ARQUITETURA.md | ✅ Completo | 2025-01-05 |
 | 03-DOCKER.md | ✅ Completo | 2025-01-05 |
 | 04-STRIPE.md | ✅ Completo | 2025-01-04 |
 | 05-PLANOS.md | ✅ Completo | 2025-01-04 |
+| 06-ARQUITETURA-FIREBASE.md | ⚠️ Referência | 2025-01-05 |
+| 07-AUTENTICACAO-HIBRIDA.md | ✅ Completo | 2025-10-05 |
+| 08-MIGRATIONS-BOAS-PRATICAS.md | ✅ Completo | 2025-10-05 |
+| 09-CHECKLIST-DESENVOLVIMENTO.md | ✅ Completo | 2025-10-05 |
+| 10-COMO-APLICAR-MIGRATION.md | ✅ Completo | 2025-10-05 |
+| 11-CREDENCIAIS.md | 🔒 Privado | 2025-10-05 |
+| 12-DEPLOY-SERVIDOR.md | ✅ Completo | 2025-10-05 |
+| 13-HYBRID-AUTH-STATUS.md | ✅ Completo | 2025-10-05 |
+| 14-IMPLEMENTACAO-COMPLETA.md | ✅ Completo | 2025-10-05 |
+| 15-PLANO-MIGRACAO.md | ⚠️ Referência | 2025-01-05 |
+| 16-PROGRESSO.md | ✅ Completo | 2025-10-05 |
 | 99-STATUS.md | ✅ Completo | 2025-01-04 |
 
 ---
 
-**Documentação organizada em:** 2025-01-05  
-**Próxima revisão:** Após conclusão da Fase 7 (Planos)
+**Documentação reorganizada em:** 2025-10-05  
+**Arquivos movidos da raiz para docs/:** 8 arquivos  
+**Próxima revisão:** Após aplicação de migration 002
