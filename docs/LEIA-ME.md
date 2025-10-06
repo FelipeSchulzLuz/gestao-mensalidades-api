@@ -1,6 +1,7 @@
-# 📖 Documentação do Projeto - Guia de Navegação
+# 📖 Documentação do Projeto - Índice e Guia de Navegação
 
-> **Porta de entrada única para toda a documentação**  
+> **🎯 Porta de entrada única para toda a documentação**  
+> **📚 Índice completo do projeto**  
 > Escolha seu perfil abaixo e siga o fluxo recomendado
 
 ---
@@ -228,8 +229,8 @@
 
 | Documento | Status |
 |-----------|--------|
-| [00-INDEX.md](./00-INDEX.md) | Índice detalhado completo |
 | [STATUS-GERAL.md](./STATUS-GERAL.md) | Status consolidado do projeto |
+| [09-CHECKLIST-DESENVOLVIMENTO.md](./09-CHECKLIST-DESENVOLVIMENTO.md) | Checklist completo de todas as fases |
 
 ---
 
@@ -259,7 +260,8 @@ git commit -m "docs: update architecture diagram"
 ## 🆘 Precisa de Ajuda?
 
 1. **Não encontrei o que procuro**
-   - Ver [00-INDEX.md](./00-INDEX.md) (índice completo detalhado)
+   - Ver [STATUS-GERAL.md](./STATUS-GERAL.md) (status e documentação consolidada)
+   - Ver [09-CHECKLIST-DESENVOLVIMENTO.md](./09-CHECKLIST-DESENVOLVIMENTO.md) (checklist completo)
 
 2. **Documento está desatualizado**
    - Abra uma issue ou atualize e faça PR
@@ -275,14 +277,15 @@ git commit -m "docs: update architecture diagram"
 
 ## 🔄 Última Atualização
 
-**Data:** 2025-10-05  
+**Data:** 2025-10-06  
 **Mudanças recentes:**
-- ✅ Criado documento mestre de navegação
-- ✅ Adicionada arquitetura híbrida (Products + Prices)
-- ✅ Reorganização completa de documentos
-- ✅ Fluxos de trabalho por perfil
+- ✅ Removido 00-INDEX.md duplicado (consolidado neste arquivo)
+- ✅ Migration 003 aplicada com sucesso
+- ✅ Entidades e Repositories implementados (Organization, Product, Price, Order)
+- ✅ Progresso atualizado para 50%
+- ✅ Documentação limpa e consistente
 
-**Próxima revisão:** Após aplicação da migration 003
+**Próxima revisão:** Após implementação dos Services
 
 ---
 
