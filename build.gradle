@@ -48,7 +48,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-admin:9.7.0'
     
 	// Migrations
-	implementation 'org.flywaydb:flyway-core:9.16.3'
+	implementation 'org.flywaydb:flyway-core:11.13.2'
 }
 
 tasks.named('test') {
