@@ -45,7 +45,7 @@ dependencies {
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.13.0'
     
     // Firebase Admin SDK (autenticação Firebase)
-    implementation 'com.google.firebase:firebase-admin:9.2.0'
+    implementation 'com.google.firebase:firebase-admin:9.7.0'
     
 	// Migrations
 	implementation 'org.flywaydb:flyway-core:9.16.3'
