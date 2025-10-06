@@ -1,0 +1,204 @@
+name: CD Pipeline - Deploy
+
+on:
+  push:
+    branches: [ master ]
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        type: choice
+        options:
+          - staging
+          - production
+
+jobs:
+  # ===================================
+  # Job 1: Deploy to Staging
+  # ===================================
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master' || github.event.inputs.environment == 'staging'
+    environment:
+      name: staging
+      url: https://staging.gestao-mensalidades.com
+    
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+      
+      - name: 🔑 Configure SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.STAGING_SSH_KEY }}
+      
+      - name: 📦 Deploy to Staging Server
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.STAGING_USER }}@${{ secrets.STAGING_HOST }} << 'ENDSSH'
+            cd /opt/gestao-mensalidades-api
+            
+            echo "🔄 Pulling latest changes..."
+            git pull origin master
+            
+            echo "🐳 Pulling Docker image..."
+            docker pull ${{ secrets.DOCKER_USERNAME }}/gestao-mensalidades-api:master
+            
+            echo "⏸️ Stopping current container..."
+            docker-compose down
+            
+            echo "🚀 Starting new container..."
+            docker-compose up -d
+            
+            echo "⏳ Waiting for health check..."
+            sleep 15
+            
+            echo "✅ Health check..."
+            curl -f http://localhost:8800/actuator/health || exit 1
+            
+            echo "🧹 Cleaning old images..."
+            docker image prune -f
+          ENDSSH
+      
+      - name: 🔔 Notify Deployment Success
+        if: success()
+        run: |
+          echo "✅ Deployment to STAGING successful!"
+          echo "URL: https://staging.gestao-mensalidades.com"
+      
+      - name: ❌ Notify Deployment Failure
+        if: failure()
+        run: |
+          echo "❌ Deployment to STAGING failed!"
+          exit 1
+
+  # ===================================
+  # Job 2: Deploy to Production
+  # ===================================
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v') || github.event.inputs.environment == 'production'
+    needs: deploy-staging
+    environment:
+      name: production
+      url: https://api.gestao-mensalidades.com
+    
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+      
+      - name: 🔑 Configure SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.PRODUCTION_SSH_KEY }}
+      
+      - name: 🎯 Extract Version
+        id: version
+        run: |
+          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            echo "version=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          else
+            echo "version=master" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: 📦 Deploy to Production Server
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.PRODUCTION_USER }}@${{ secrets.PRODUCTION_HOST }} << 'ENDSSH'
+            cd /opt/gestao-mensalidades-api
+            
+            echo "📸 Creating backup..."
+            docker-compose exec -T postgres pg_dump -U gestao_user gestao_mensalidades_prod > backup_$(date +%Y%m%d_%H%M%S).sql
+            
+            echo "🔄 Pulling latest changes..."
+            git fetch --tags
+            git checkout ${{ steps.version.outputs.version }}
+            
+            echo "🐳 Pulling Docker image..."
+            docker pull ${{ secrets.DOCKER_USERNAME }}/gestao-mensalidades-api:${{ steps.version.outputs.version }}
+            
+            echo "⏸️ Stopping current container..."
+            docker-compose down
+            
+            echo "🚀 Starting new container..."
+            docker-compose up -d
+            
+            echo "⏳ Waiting for health check..."
+            sleep 20
+            
+            echo "✅ Health check..."
+            curl -f http://localhost:8800/actuator/health || exit 1
+            
+            echo "🧹 Cleaning old images..."
+            docker image prune -f
+          ENDSSH
+      
+      - name: 🏷️ Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ steps.version.outputs.version }}
+          body: |
+            ## 🚀 Release ${{ steps.version.outputs.version }}
+            
+            ### 📝 Changelog
+            See [CHANGELOG.md](./CHANGELOG.md) for details.
+            
+            ### 🐳 Docker Image
+            ```bash
+            docker pull ${{ secrets.DOCKER_USERNAME }}/gestao-mensalidades-api:${{ steps.version.outputs.version }}
+            ```
+          draft: false
+          prerelease: false
+      
+      - name: 🔔 Notify Deployment Success
+        if: success()
+        run: |
+          echo "✅ Deployment to PRODUCTION successful!"
+          echo "Version: ${{ steps.version.outputs.version }}"
+          echo "URL: https://api.gestao-mensalidades.com"
+      
+      - name: ❌ Notify Deployment Failure & Rollback
+        if: failure()
+        run: |
+          echo "❌ Deployment to PRODUCTION failed! Initiating rollback..."
+          ssh -o StrictHostKeyChecking=no ${{ secrets.PRODUCTION_USER }}@${{ secrets.PRODUCTION_HOST }} << 'ENDSSH'
+            cd /opt/gestao-mensalidades-api
+            echo "🔄 Rolling back to previous version..."
+            docker-compose down
+            docker-compose up -d
+          ENDSSH
+          exit 1
+
+  # ===================================
+  # Job 3: Health Check
+  # ===================================
+  health-check:
+    name: Post-Deployment Health Check
+    runs-on: ubuntu-latest
+    needs: [deploy-production]
+    if: always()
+    
+    steps:
+      - name: 🏥 Production Health Check
+        run: |
+          echo "Checking production health..."
+          response=$(curl -s -o /dev/null -w "%{http_code}" https://api.gestao-mensalidades.com/actuator/health)
+          
+          if [ $response -eq 200 ]; then
+            echo "✅ Production is healthy (HTTP $response)"
+          else
+            echo "❌ Production health check failed (HTTP $response)"
+            exit 1
+          fi
+      
+      - name: 📊 API Metrics
+        run: |
+          echo "Fetching API metrics..."
+          curl -s https://api.gestao-mensalidades.com/actuator/metrics | jq '.'

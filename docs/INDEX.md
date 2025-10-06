@@ -37,6 +37,7 @@ Este diretório contém toda a documentação técnica do projeto **Gestão de M
 ### Deploy & Infraestrutura
 - **[DOCKER.md](./DOCKER.md)** - Docker compose, containers, pgAdmin
 - **[DEPLOY-SERVIDOR.md](./DEPLOY-SERVIDOR.md)** - Deploy em servidor VPS
+- **[CI-CD.md](./CI-CD.md)** - GitHub Actions (CI/CD pipelines)
 
 ### Desenvolvimento
 - **[CHECKLIST-DESENVOLVIMENTO.md](./CHECKLIST-DESENVOLVIMENTO.md)** - Checklist ao criar features
@@ -56,6 +57,7 @@ docs/
 ├── ARQUITETURA.md
 ├── AUTENTICACAO-HIBRIDA.md
 ├── CHECKLIST-DESENVOLVIMENTO.md
+├── CI-CD.md                         🆕 GitHub Actions
 ├── COMO-APLICAR-MIGRATION.md
 ├── CREDENCIAIS.md                   (local only, .gitignore)
 ├── DEPLOY-SERVIDOR.md
@@ -67,7 +69,7 @@ docs/
 └── STRIPE.md
 ```
 
-**Total:** 14 arquivos (incluindo este INDEX.md)
+**Total:** 15 arquivos (incluindo este INDEX.md)
 
 ---
 
@@ -77,6 +79,7 @@ docs/
 |---------|-----------|
 | Primeiro dia no projeto | `INICIO-RAPIDO.md` |
 | Levantar ambiente local | `DOCKER.md` |
+| Configurar CI/CD | `CI-CD.md` 🆕 |
 | Criar nova feature | `CHECKLIST-DESENVOLVIMENTO.md` |
 | Integrar Stripe | `STRIPE.md` |
 | Criar migration | `MIGRATIONS-BOAS-PRATICAS.md` |
