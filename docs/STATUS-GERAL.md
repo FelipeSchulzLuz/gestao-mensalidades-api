@@ -1,24 +1,14 @@
 # 📊 Status Geral do Projeto
 
 > **Documento consolidado de todos os status**  
-> **Última atualização:### ❌### ❌ Decisões Descartadas
-
-| Decisão | Status | Razão |
-|---------|--------|-------|
-| Migração para Firebase | ❌ Descartada | Optamos por arquitetura híbrida JWT+Firebase |
-| Modelo "Plan" único | ❌ Obsoleto | Substituído por Products + Prices (Stripe) |ões Descartadas
-
-| Decisão | Status | Notas |
-|---------|--------|-------|
-| Migração para Firebase | ❌ Descartada | Optamos por autenticação híbrida (JWT + Firebase Auth) |
-| Modelo "Plan" único | ❌ Obsoleto | Substituído por Products + Prices (Stripe) |5-10-05
+> **Última atualização:** 2025-10-06
 
 ---
 
 ## 🎯 Status Atual: Em Desenvolvimento Ativo
 
-**Versão:** 1.3.0  
-**Progresso Geral:** ~25% (3 de 14 fases completas)  
+**Versão:** 1.4.0  
+**Progresso Geral:** ~30% (Migration 003 criada)  
 **Fase Atual:** Implementação da Arquitetura Híbrida (Products + Prices)
 
 ---
@@ -35,17 +25,18 @@
 
 ### 🚧 O Que Está em Andamento
 
-- **Migration 002:** Firebase Auth (SQL criada, não aplicada)
+- **Migration 003:** Hybrid Commerce Architecture (SQL criada ✅, aguardando aplicação)
 - **Arquitetura Híbrida:** Documentação completa (implementação pendente)
-- **Products + Prices:** Nova estrutura (substituindo Plans)
+- **Products + Prices:** Nova estrutura (SQL pronta, entidades Java pendentes)
 
 ### ⏸️ Próximos Passos Críticos
 
-1. **Aplicar Migration 002** (Firebase Auth support)
-2. **Criar Migration 003** (Organizations, Products, Prices, Orders)
-3. **Implementar Entidades Novas** (Product, Price, Organization, Order)
-4. **Refatorar Código Existente** (Plan → Product + Price)
-5. **Implementar Checkout Dual** (subscription + payment modes)
+1. ✅ ~~Aplicar Migration 002~~ (Firebase Auth support) - **CONCLUÍDO**
+2. ✅ ~~Criar Migration 003~~ (Organizations, Products, Prices, Orders) - **CONCLUÍDO**
+3. **Aplicar Migration 003** (executar SQL no banco)
+4. **Implementar Entidades Novas** (Product, Price, Organization, Order em Java)
+5. **Refatorar Código Existente** (Plan → Product + Price)
+6. **Implementar Checkout Dual** (subscription + payment modes)
 
 ---
 
@@ -64,11 +55,12 @@ FASES COMPLETAS (3/14 - 21.4%)
 FASE CRÍTICA ATUAL
 ════════════════════════════════════════════════════════════
 
-🔥 Fase 3.5: Arquitetura Híbrida         ████████░░░░░░░░░░░░  40%
+🔥 Fase 3.5: Arquitetura Híbrida         ████████████░░░░░░░░  60%
    └─ Documentação completa ✅
    └─ Migration 002 criada ✅
-   └─ Migration 002 aplicada ❌
-   └─ Migration 003 criada ❌
+   └─ Migration 002 aplicada ✅
+   └─ Migration 003 criada ✅
+   └─ Migration 003 aplicada ⏳
    └─ Entidades implementadas ❌
 
 ════════════════════════════════════════════════════════════
@@ -121,25 +113,33 @@ FASES PENDENTES (11/14 - 78.6%)
 
 ## 🚦 Bloqueadores Atuais
 
-### 🔴 Bloqueadores Críticos
+### � Bloqueadores Resolvidos
 
 1. **Migration 002 Aplicada ✅**
    - **Status:** Migration aplicada com sucesso via Flyway
    - **Método:** `./scripts/run-make.sh start` ou `docker compose run --rm flyway`
    - **Documento:** [10-COMO-APLICAR-MIGRATION.md](./10-COMO-APLICAR-MIGRATION.md)
 
+2. **Migration 003 Criada ✅**
+   - **Status:** SQL completo criado (database/migrations/003 + V3 Flyway)
+   - **Descrição:** DDL para organizations, products, prices, orders + migração de dados Plan→Product/Price
+   - **Arquivos:** 
+     - `database/migrations/003_hybrid_commerce_architecture.sql` (verbose, ~550 linhas)
+     - `src/main/resources/db/migration/V3__hybrid_commerce_architecture.sql` (Flyway)
+   - **Documento:** [MIGRATION-003-GUIA.md](./MIGRATION-003-GUIA.md)
+
 ### 🟡 Bloqueadores Moderados
 
-2. **Migration 003 Não Criada**
-   - **Impacto:** Nova arquitetura não pode ser testada
-   - **Descrição:** Precisa criar SQL para organizations, products, prices, orders
-   - **Depende de:** Migration 002 aplicada primeiro
-   - **Documento:** [17-ARQUITETURA-HIBRIDA.md](./17-ARQUITETURA-HIBRIDA.md) seção "Checklist"
+3. **Migration 003 Não Aplicada ⏳**
+   - **Impacto:** Nova arquitetura criada mas não está no banco
+   - **Próximo passo:** Executar `./scripts/run-make.sh migrate` ou `docker compose run --rm flyway`
+   - **Documento:** [MIGRATION-003-GUIA.md](./MIGRATION-003-GUIA.md)
 
-3. **Entidades Antigas no Código**
-   - **Impacto:** Confusão entre Plan (antigo) e Product (novo)
-   - **Solução:** Criar adaptador temporário ou refatorar completamente
-   - **Status:** Aguardando Migration 003
+4. **Entidades Java Não Implementadas**
+   - **Impacto:** Código Java ainda não reflete nova arquitetura
+   - **Solução:** Criar Organization.java, Product.java, Price.java, Order.java
+   - **Status:** Aguardando aplicação da Migration 003
+   - **Documento:** [17-ARQUITETURA-HIBRIDA.md](./17-ARQUITETURA-HIBRIDA.md)
 
 ---
 
@@ -203,16 +203,25 @@ FASES PENDENTES (11/14 - 78.6%)
 
 ## 🚀 Roadmap Imediato
 
-### Sprint Atual (Semana 1-2)
+### Sprint Atual (Semana 1-2) ✅ CONCLUÍDO
 
 - [x] **Aplicar Migration 002** (Firebase Auth support)
   - Comando usado: `docker compose run --rm flyway`
   - Status: ✅ Aplicada com sucesso
 
-- [ ] **Criar Migration 003** (Hybrid Architecture)
-  - Arquivo: `database/migrations/003_hybrid_commerce_architecture.sql`
-  - Conteúdo: organizations, products, prices, orders
+- [x] **Criar Migration 003** (Hybrid Architecture)
+  - Arquivos: `database/migrations/003_hybrid_commerce_architecture.sql` + Flyway V3
+  - Conteúdo: organizations, products, prices, orders (4 novas tabelas)
   - Migração: Dados de Plan → Product + Price
+  - Documentação: `docs/MIGRATION-003-GUIA.md` (completo com validação e rollback)
+  - Status: ✅ Criada (aguardando aplicação)
+
+### Sprint Atual (Semana 2) ⏳ EM ANDAMENTO
+
+- [ ] **Aplicar Migration 003**
+  - Comando: `./scripts/run-make.sh migrate` ou `docker compose run --rm flyway`
+  - Validação: Verificar 4 novas tabelas + dados migrados
+  - Guia: `docs/MIGRATION-003-GUIA.md`
 
 - [ ] **Atualizar Documentação Base**
   - [ ] 02-ARQUITETURA.md (adicionar Products + Prices)
@@ -276,16 +285,23 @@ FASES PENDENTES (11/14 - 78.6%)
 
 ## 🔄 Última Atualização
 
-**Data:** 2025-10-05  
+**Data:** 2025-10-06  
 **Autor:** Time de Desenvolvimento  
 **Mudanças:**
-- ✅ Criado documento consolidado de status
-- ✅ Documentação reorganizada (20 docs)
-- ✅ Arquitetura híbrida documentada (620 linhas)
-- ✅ Resumo executivo criado (390 linhas)
-- ✅ Porta de entrada única (LEIA-ME.md)
-- ✅ Documentos obsoletos marcados
+- ✅ Migration 003 criada (550+ linhas SQL)
+  - Novas tabelas: organizations, products, prices, orders
+  - Migração de dados: plans → products + prices
+  - Arquivos: database/migrations/003 + V3 Flyway
+- ✅ Guia completo de aplicação: `MIGRATION-003-GUIA.md`
+  - Instruções de aplicação
+  - Validações pós-aplicação
+  - Procedimentos de rollback
+  - Troubleshooting
+- ✅ Documentos obsoletos removidos (3 arquivos)
+- ✅ Todas referências atualizadas (8 arquivos)
+- ✅ Todo list atualizada (Migration 003 concluída)
 
+**Progresso:** 30% (de 25%) - Migration 003 criada  
 **Próxima Revisão:** Após aplicação da Migration 003
 
 ---
