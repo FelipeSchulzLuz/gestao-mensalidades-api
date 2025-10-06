@@ -28,13 +28,22 @@ gestao-mensalidades-api/
 ### ❌ NÃO copiar (apenas dev local):
 
 ```
-❌ scripts/                        ← Scripts PowerShell (dev local)
+❌ scripts/*.ps1                   ← Scripts PowerShell (apenas Windows)
 ❌ build/                          ← Será gerado no servidor
 ❌ .gradle/                        ← Cache local
 ❌ .git/                           ← Opcional (pode copiar se quiser)
 ❌ .idea/                          ← IDE
 ❌ *.log                           ← Logs locais
 ❌ src/main/resources/serviceAccountKey.json  ← NUNCA COPIAR!
+```
+
+### ✅ Copiar (scripts para Linux):
+
+```
+✅ scripts/*.sh                    ← Scripts Bash para servidor Linux
+   - recreate-database.sh
+   - apply-migration-existing-db.sh
+   - apply-migration-docker.sh
 ```
 
 ---
@@ -169,7 +178,26 @@ Ajustar:
       - ./config:/app/config:ro  # ← Adicionar esta linha
 ```
 
-### 6️⃣ Iniciar Aplicação
+### 6️⃣ Dar Permissão de Execução aos Scripts
+
+```bash
+# Tornar scripts executáveis
+chmod +x scripts/*.sh
+```
+
+### 7️⃣ Aplicar Migration (Primeira vez)
+
+**Opção A: Database limpo (recomendado primeira vez)**
+```bash
+./scripts/recreate-database.sh
+```
+
+**Opção B: Database existente**
+```bash
+./scripts/apply-migration-existing-db.sh
+```
+
+### 8️⃣ Iniciar Aplicação
 
 ```bash
 # Build e start
@@ -182,7 +210,7 @@ docker-compose logs -f
 docker-compose ps
 ```
 
-### 7️⃣ Verificar se Funcionou
+### 9️⃣ Verificar se Funcionou
 
 ```bash
 # Testar health check
