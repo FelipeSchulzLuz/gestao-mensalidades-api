@@ -2,7 +2,9 @@
 
 > **Guia completo de navegação pela documentação do projeto**
 
-Este documento serve como índice centralizado de toda a documentação do projeto. Leia os documentos na ordem sugerida para melhor compreensão.
+Este documento serve com#### 🏭️ [17-ARQUITETURA-HIBRIDA.md](./17-ARQUITETURA-HIBRIDA.md) 🆕 **FUNDAMENTAL**ralizado de toda a documentação do pro---
+
+#### 🏭️ [02-ARQUITETURA.md](./02-ARQUITETURA.md)a os documentos na ordem sugerida para melhor compreensão.
 
 ---
 
@@ -21,8 +23,8 @@ Este documento serve como índice centralizado de toda a documentação do proje
 
 1. **18-MUDANCA-ARQUITETURAL-RESUMO.md** - 🚨 Resumo executivo da mudança
 2. **17-ARQUITETURA-HIBRIDA.md** - 🔥 Especificação técnica completa
-3. **09-CHECKLIST-DESENVOLVIMENTO.md** - Tarefas pendentes (será atualizado)
-4. **99-STATUS.md** - Progresso atual
+3. **STATUS-GERAL.md** - Status e progresso consolidado
+4. **09-CHECKLIST-DESENVOLVIMENTO.md** - Tarefas pendentes
 5. **04-STRIPE.md** - Referência de integração Stripe
 
 ### ✅ Arquitetura Confirmada: Java/Spring Boot + PostgreSQL
@@ -223,25 +225,6 @@ Este documento serve como índice centralizado de toda a documentação do proje
 
 **Tempo de leitura:** 15 minutos  
 **Pré-requisitos:** Conta Stripe (test mode), Stripe CLI instalado
-
----
-
----
-
-#### 📊 [99-STATUS.md](./99-STATUS.md)
-**Descrição:** Status atual do projeto e progresso das fases.  
-**Quando usar:** Planejamento, standup, verificar próximos passos.  
-**Conteúdo:**
-- Progresso visual (14.3% - 2/14 fases)
-- Detalhamento de cada fase
-- Fases completas (1 e 2)
-- Próximas fases
-- Decisões arquiteturais
-- Comandos úteis
-- Métricas do projeto
-
-**Tempo de leitura:** 10 minutos  
-**Atualização:** Automática conforme progresso
 
 ---
 

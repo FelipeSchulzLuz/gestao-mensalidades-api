@@ -318,14 +318,12 @@ FASES PENDENTES (11/14 - 78.6%)
   - Imports corrigidos em FirebaseAuthController
   - Build successful após ajustes
 
-**Progresso:** 40% (de 30%) - Migration 003 aplicada + banco pronto  
-**Próxima Revisão:** Após implementação das entidades Java
+**Progresso:** 50% (entidades e repositories implementados)  
+**Próxima Revisão:** Após implementação dos Services
 
 ---
 
-**💡 Este documento substitui:**
-- 99-STATUS.md (status técnico detalhado)
-- 13-HYBRID-AUTH-STATUS.md (status específico auth)
-- 16-PROGRESSO.md (tracking de progresso)
-
-**📖 Para detalhes técnicos específicos, consulte os documentos individuais.**
+**� Para detalhes técnicos específicos, consulte os documentos individuais:**
+- [17-ARQUITETURA-HIBRIDA.md](./17-ARQUITETURA-HIBRIDA.md) - Arquitetura completa Products + Prices
+- [09-CHECKLIST-DESENVOLVIMENTO.md](./09-CHECKLIST-DESENVOLVIMENTO.md) - Checklist detalhado de tarefas
+- [MIGRATION-003-GUIA.md](./MIGRATION-003-GUIA.md) - Guia da Migration 003

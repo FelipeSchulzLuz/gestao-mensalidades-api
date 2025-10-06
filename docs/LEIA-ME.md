@@ -229,10 +229,7 @@
 | Documento | Status |
 |-----------|--------|
 | [00-INDEX.md](./00-INDEX.md) | Índice detalhado completo |
-| [ESTRUTURA-DOCUMENTACAO.md](./ESTRUTURA-DOCUMENTACAO.md) | Como docs estão organizados |
-| [13-HYBRID-AUTH-STATUS.md](./13-HYBRID-AUTH-STATUS.md) | Status auth (arquivado) |
-| [14-IMPLEMENTACAO-COMPLETA.md](./14-IMPLEMENTACAO-COMPLETA.md) | Resumo implementação |
-| [16-PROGRESSO.md](./16-PROGRESSO.md) | Tracking (arquivado) |
+| [STATUS-GERAL.md](./STATUS-GERAL.md) | Status consolidado do projeto |
 
 ---
 

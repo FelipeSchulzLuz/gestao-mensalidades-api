@@ -40,10 +40,10 @@ Progresso Total: 33.3% (5/15 fases, Fase 7 em 50%)
 ## 📖 Documentação de Referência
 
 - `docs/17-ARQUITETURA-HIBRIDA.md` - Arquitetura Products + Prices (atual)
+- `docs/STATUS-GERAL.md` - Status consolidado e progresso do projeto
 - `docs/04-STRIPE.md` - Guia completo do Stripe CLI e webhooks
 - `docs/03-DOCKER.md` - Instruções para rodar PostgreSQL, pgAdmin, Redis
-- `CREDENCIAIS.md` - Todas credenciais e acessos (protegido no .gitignore)
-- `docs/99-STATUS.md` - Status detalhado do projeto
+- `docs/11-CREDENCIAIS.md` - Todas credenciais e acessos (protegido no .gitignore)
 
 ---
 
@@ -1044,7 +1044,7 @@ A Fase 3 já implementou todo o módulo de autenticação seguindo Clean Archite
   - Arquitetura de gerenciamento de planos (link para docs/17-ARQUITETURA-HIBRIDA.md)
 
 ### 13.3 Documentação Stripe
-- [ ] Documentar IDs necessários (prices, products) ✅ (JÁ FEITO - ver CREDENCIAIS.md)
+- [ ] Documentar IDs necessários (prices, products) ✅ (JÁ FEITO - ver 11-CREDENCIAIS.md)
 - [ ] Documentar configuração do Customer Portal
 - [ ] Criar guia de troubleshooting de webhooks ✅ (JÁ FEITO - ver docs/04-STRIPE.md)
 - [ ] Documentar fluxo completo de desenvolvimento local ✅ (JÁ FEITO - ver docs/04-STRIPE.md)
@@ -1235,7 +1235,7 @@ A Fase 3 já implementou todo o módulo de autenticação seguindo Clean Archite
 - [ ] Guia de desenvolvimento local ✅ (JÁ FEITO - docs/04-STRIPE.md)
 - [ ] Guia Docker ✅ (JÁ FEITO - docs/03-DOCKER.md)
 - [ ] Arquitetura de planos documentada ✅ (JÁ FEITO - docs/17-ARQUITETURA-HIBRIDA.md)
-- [ ] Credenciais e senhas documentadas ✅ (JÁ FEITO - CREDENCIAIS.md)
+- [ ] Credenciais e senhas documentadas ✅ (JÁ FEITO - 11-CREDENCIAIS.md)
 - [ ] Guia de deploy criado
 
 ### Performance
