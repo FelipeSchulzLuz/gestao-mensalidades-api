@@ -23,19 +23,26 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Configuração de segurança do Spring Security com JWT.
+ * Configuração de segurança do Spring Security com autenticação híbrida.
+ * 
+ * <p>Suporta dois métodos de autenticação:
+ * <ul>
+ *   <li>JWT próprio (email/senha)</li>
+ *   <li>Firebase Authentication (social login)</li>
+ * </ul>
  * 
  * <p>Define:
  * <ul>
  *   <li>Rotas públicas e protegidas</li>
  *   <li>Configuração de CORS</li>
- *   <li>Filtro JWT customizado</li>
+ *   <li>Filtro unificado (detecta tipo de token automaticamente)</li>
  *   <li>Política de sessão stateless</li>
- *   <li>Password encoder (BCrypt)</li>
+ *   <li>Password encoder (BCrypt para JWT)</li>
+ *   <li>Suporte a @PreAuthorize para controle de acesso fino</li>
  * </ul>
  * 
  * @author Sistema de Gestão de Mensalidades
- * @version 1.0
+ * @version 2.0 (Híbrido: JWT + Firebase)
  */
 @Configuration
 @EnableWebSecurity
@@ -46,7 +53,7 @@ public class SecurityConfig {
     private String allowedOrigins;
     
     @Autowired
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
+    private UnifiedAuthenticationFilter unifiedAuthenticationFilter;
     
     @Autowired
     private JwtAuthenticationEntryPoint unauthorizedHandler;
@@ -91,8 +98,8 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 );
         
-        // Adicionar filtro JWT antes do filtro de autenticação padrão
-        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        // Adicionar filtro unificado (JWT + Firebase) antes do filtro de autenticação padrão
+        http.addFilterBefore(unifiedAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         
         return http.build();
     }
