@@ -14,8 +14,6 @@ services:
       - "54320:5432"  # Porta externa: 54320 (não convencional)
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./database/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
-      - ./database/migrations/002_add_firebase_auth_support.sql:/docker-entrypoint-initdb.d/02-firebase-auth.sql:ro
     networks:
       - gestao-network
     healthcheck:
@@ -44,7 +42,7 @@ services:
     container_name: gestao-pgadmin
     restart: unless-stopped
     environment:
-      PGADMIN_DEFAULT_EMAIL: schulz.neo@gmail.com
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-admin@example.com}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin123}
       PGADMIN_CONFIG_SERVER_MODE: 'False'
       PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
@@ -83,40 +81,54 @@ services:
       retries: 5
 
   # Aplicação Spring Boot (comentado - descomente quando estiver pronto)
-  # app:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #   container_name: gestao-api
-  #   restart: unless-stopped
-  #   environment:
-  #     SPRING_PROFILES_ACTIVE: prod
-  #     DB_HOST: postgres
-  #     DB_PORT: 5432
-  #     DB_NAME: gestao_mensalidades_dev
-  #     DB_USER: gestao_app_user
-  #     DB_PASSWORD: ${DB_PASSWORD}
-  #     JWT_SECRET: ${JWT_SECRET}
-  #     STRIPE_API_KEY: ${STRIPE_API_KEY}
-  #     STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
-  #     REDIS_HOST: redis
-  #     REDIS_PORT: 6379
-  #     REDIS_PASSWORD: ${REDIS_PASSWORD}
-  #   ports:
-  #     - "8800:8080"  # Porta externa: 8800 (não convencional)
-  #   networks:
-  #     - gestao-network
-  #   depends_on:
-  #     postgres:
-  #       condition: service_healthy
-  #     redis:
-  #       condition: service_healthy
-  #   healthcheck:
-  #     test: ["CMD", "curl", "-f", "http://localhost:8080/api/actuator/health"]
-  #     interval: 30s
-  #     timeout: 10s
-  #     retries: 3
-  #     start_period: 60s
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: gestao-api
+    restart: unless-stopped
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: gestao_mensalidades_dev
+      DB_USER: gestao_app_user
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      STRIPE_API_KEY: ${STRIPE_API_KEY}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    ports:
+      - "8800:8080"  # Porta externa: 8800 (não convencional)
+    networks:
+      - gestao-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Flyway - executar migrations antes da aplicação
+  flyway:
+    image: flyway/flyway:9
+    container_name: gestao-flyway
+    environment:
+      FLYWAY_PLACEHOLDERS_DB_NAME: gestao_mensalidades_dev
+    depends_on:
+      - postgres
+    command: -url=jdbc:postgresql://postgres:5432/gestao_mensalidades_dev -user=gestao_app_user -password=${DB_PASSWORD:-seu_password_seguro_aqui} migrate
+    volumes:
+      - ./src/main/resources/db/migration:/flyway/sql:ro
+    networks:
+      - gestao-network
 
 networks:
   gestao-network:

@@ -30,11 +30,11 @@ spring:
       idle-timeout: 300000
       max-lifetime: 1200000
   
-  # JPA/Hibernate Configuration
+    # JPA/Hibernate Configuration
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: update  # Usar 'update' em dev para facilitar desenvolvimento
+      ddl-auto: none  # Gerenciado por Flyway (usar 'none' para evitar DDL automático)
     show-sql: true
     properties:
       hibernate:
@@ -44,6 +44,13 @@ spring:
           batch_size: 20
         order_inserts: true
         order_updates: true
+
+  # Flyway (migrations gerenciadas pela aplicação)
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    placeholder-replacement: true
   
   # Security Configuration
   security:
