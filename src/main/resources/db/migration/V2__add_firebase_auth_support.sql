@@ -11,9 +11,16 @@ CREATE INDEX IF NOT EXISTS idx_user_firebase_uid ON users(firebase_uid);
 ALTER TABLE users ALTER COLUMN password DROP NOT NULL;
 
 -- 4. Adicionar constraint para garantir que usuário tenha pelo menos um método de auth
-ALTER TABLE users 
-ADD CONSTRAINT IF NOT EXISTS chk_user_has_auth_method 
-CHECK (password IS NOT NULL OR firebase_uid IS NOT NULL);
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_constraint WHERE conname = 'chk_user_has_auth_method'
+    ) THEN
+        ALTER TABLE users 
+        ADD CONSTRAINT chk_user_has_auth_method 
+        CHECK (password IS NOT NULL OR firebase_uid IS NOT NULL);
+    END IF;
+END $$;
 
 -- 5. Comentários nas colunas para documentação
 COMMENT ON COLUMN users.password IS 'Senha hasheada com BCrypt (apenas para autenticação JWT própria). NULL se usa apenas Firebase.';
