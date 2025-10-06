@@ -6,10 +6,11 @@
 Fase 1: Setup do Projeto           ████████████████████ 100% ✅
 Fase 2: Banco de Dados              ████████████████████ 100% ✅
 Fase 3: Autenticação & Security     ████████████████████ 100% ✅
+Fase 3.5: Migration 003 (Hybrid)    ████████████████████ 100% ✅
 Fase 4: Integração Stripe Base      ░░░░░░░░░░░░░░░░░░░░   0% 🔜
 Fase 5: Módulo Auth (/auth)         ░░░░░░░░░░░░░░░░░░░░   0% 
 Fase 6: Módulo Usuários             ░░░░░░░░░░░░░░░░░░░░   0% 
-Fase 7: Módulo Planos (CRÍTICO)     ░░░░░░░░░░░░░░░░░░░░   0% 
+Fase 7: Products + Prices (CRÍTICO) ░░░░░░░░░░░░░░░░░░░░   0% 
 Fase 8: Checkout & Assinaturas      ░░░░░░░░░░░░░░░░░░░░   0% 
 Fase 9: Portal do Cliente           ░░░░░░░░░░░░░░░░░░░░   0% 
 Fase 10: Webhooks (CRÍTICO)         ░░░░░░░░░░░░░░░░░░░░   0% 
@@ -18,15 +19,16 @@ Fase 12: Testes                     ░░░░░░░░░░░░░░�
 Fase 13: Documentação               ███████░░░░░░░░░░░░░  35% 🚧
 Fase 14: Produção                   ░░░░░░░░░░░░░░░░░░░░   0% 
 
-Progresso Total: 21.4% (3/14 fases)
+Progresso Total: 26.7% (4/15 fases)
 ```
 
 ## 🎯 Próximos Passos Recomendados
 
 1. ✅ **Fase 3**: ~~Implementar Spring Security + JWT~~ **COMPLETO!**
-2. **Fase 4**: Configurar Stripe SDK e serviços base ← **PRÓXIMO**
-3. **Fase 7**: **CRÍTICO** - Implementar gerenciamento de planos (admin + público + sincronização)
-4. **Fase 10**: **CRÍTICO** - Implementar webhooks (assinaturas + sincronização de planos)
+2. ✅ **Fase 3.5**: ~~Migration 003 - Hybrid Architecture~~ **COMPLETO!**
+3. **Fase 7**: **CRÍTICO** - Implementar entidades Java (Organization, Product, Price, Order) ← **PRÓXIMO**
+4. **Fase 4**: Configurar Stripe SDK e serviços base
+5. **Fase 10**: **CRÍTICO** - Implementar webhooks (assinaturas + e-commerce)
 
 ## 📖 Documentação de Referência
 
@@ -439,7 +441,12 @@ A Fase 3 já implementou todo o módulo de autenticação seguindo Clean Archite
 
 ---
 
-## ✅ FASE 7: MÓDULO DE PLANOS (/plans)
+## ✅ FASE 7: MÓDULO PRODUCTS + PRICES (/products, /prices)
+
+> ⚠️ **IMPORTANTE:** Esta fase foi renomeada de "Módulo de Planos" para "Products + Prices"  
+> 📅 **Migration 003:** Aplicada em 2025-10-06 04:30:58 ✅  
+> 📚 **Referência:** Ver [17-ARQUITETURA-HIBRIDA.md](./17-ARQUITETURA-HIBRIDA.md)  
+> 🎯 **Objetivo:** Implementar entidades Java correspondentes às tabelas do banco
 
 ### 7.1 DTOs Públicos (Frontend)
 - [ ] Criar `PlanResponseDTO`
