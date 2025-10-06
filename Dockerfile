@@ -23,7 +23,7 @@ RUN gradle clean bootJar -x test --no-daemon
 # =============================================================================
 # Stage 2: Imagem de produção otimizada
 # =============================================================================
-FROM eclipse-temurin:21-jre-alpine
+FROM eclipse-temurin:25-jre-alpine
 
 # Instalar dependências necessárias
 RUN apk add --no-cache \
