@@ -1,5 +1,19 @@
 # 📋 Arquitetura de Gerenciamento de Planos
 
+> ⚠️ **STATUS: DEPRECATED - Documento Obsoleto**  
+> **Este documento descreve a arquitetura ANTIGA baseada em "Planos".**  
+> 
+> **📖 Para a arquitetura ATUAL, leia:**  
+> - **[17-ARQUITETURA-HIBRIDA.md](./17-ARQUITETURA-HIBRIDA.md)** - Arquitetura completa Products + Prices  
+> - **[18-MUDANCA-ARQUITETURAL-RESUMO.md](./18-MUDANCA-ARQUITETURAL-RESUMO.md)** - Resumo da mudança  
+>
+> **🔄 Mudança Principal:**  
+> `Plan` → `Product` + `Price` (múltiplos preços por produto)
+>
+> **Manter este documento apenas como referência histórica.**
+
+---
+
 ## 🎯 Estratégia Recomendada: Banco de Dados + Admin Panel
 
 ### Decisão de Design

@@ -1,21 +1,39 @@
 # 🏗️ Arquitetura do Sistema - Gestão de Mensalidades API
 
+> **📅 Última atualização:** 2025-10-05  
+> **📖 Complemento:** Ver [17-ARQUITETURA-HIBRIDA.md](./17-ARQUITETURA-HIBRIDA.md) para arquitetura Products + Prices
+
+---
+
+## ⚡ Mudança Arquitetural Importante
+
+> 🔄 **Outubro 2025:** Sistema evoluiu de **Planos** para **Products + Prices**
+> 
+> **Motivação:** Suportar assinaturas E e-commerce na mesma plataforma
+> 
+> **Leitura obrigatória:**
+> - [18-MUDANCA-ARQUITETURAL-RESUMO.md](./18-MUDANCA-ARQUITETURAL-RESUMO.md) (10 min)
+> - [17-ARQUITETURA-HIBRIDA.md](./17-ARQUITETURA-HIBRIDA.md) (30 min)
+
+---
+
 ## 📋 Índice
 
 1. [Visão Geral](#visão-geral)
-2. [Clean Architecture](#clean-architecture)
-3. [Estrutura de Camadas](#estrutura-de-camadas)
-4. [Fluxo de Dados](#fluxo-de-dados)
-5. [Padrões de Projeto](#padrões-de-projeto)
-6. [Tecnologias Principais](#tecnologias-principais)
-7. [Integração com Stripe](#integração-com-stripe)
-8. [Segurança](#segurança)
+2. [Nova Arquitetura (Products + Prices)](#nova-arquitetura-products--prices)
+3. [Clean Architecture](#clean-architecture)
+4. [Estrutura de Camadas](#estrutura-de-camadas)
+5. [Fluxo de Dados](#fluxo-de-dados)
+6. [Padrões de Projeto](#padrões-de-projeto)
+7. [Tecnologias Principais](#tecnologias-principais)
+8. [Integração com Stripe](#integração-com-stripe)
+9. [Segurança](#segurança)
 
 ---
 
 ## 🎯 Visão Geral
 
-Este projeto implementa uma API RESTful para **gerenciamento de assinaturas e mensalidades** integrada ao **Stripe** para processamento de pagamentos. O sistema segue os princípios da **Clean Architecture**, garantindo:
+Este projeto implementa uma API RESTful para **gerenciamento de assinaturas e e-commerce** integrada ao **Stripe** para processamento de pagamentos. O sistema segue os princípios da **Clean Architecture**, garantindo:
 
 - ✅ **Separação de Responsabilidades**: Cada camada tem uma única responsabilidade
 - ✅ **Independência de Frameworks**: A lógica de negócio não depende de frameworks externos
@@ -62,6 +80,191 @@ Este projeto implementa uma API RESTful para **gerenciamento de assinaturas e me
               │                    │
          PostgreSQL              Stripe
 ```
+
+---
+
+## 🆕 Nova Arquitetura (Products + Prices)
+
+> **Esta seção descreve a arquitetura híbrida implementada em Outubro 2025.**  
+> Para detalhes completos, ver [17-ARQUITETURA-HIBRIDA.md](./17-ARQUITETURA-HIBRIDA.md)
+
+### Conceito Central
+
+O sistema agora suporta **dois modelos de negócio** na mesma plataforma:
+
+1. **Assinaturas Recorrentes** (SaaS, planos mensais/anuais)
+2. **E-commerce** (vendas únicas, produtos físicos/digitais)
+
+### Modelo de Dados Atualizado
+
+```
+┌────────────────────────────────────────────────────────────┐
+│                       ORGANIZATION                          │
+│  ┌──────────────────────────────────────────────────────┐ │
+│  │ id, name, commerce_mode (SUBSCRIPTIONS/ECOMMERCE/   │ │
+│  │ HYBRID), stripe_account_id                           │ │
+│  └──────────────────────────────────────────────────────┘ │
+└────────────────────────┬───────────────────────────────────┘
+                         │
+          ┌──────────────┼──────────────┐
+          │                             │
+┌─────────▼─────────────┐    ┌─────────▼─────────────┐
+│       PRODUCT         │    │        USER           │
+│ ┌───────────────────┐ │    │ ┌───────────────────┐ │
+│ │ id, organization  │ │    │ │ id, organization  │ │
+│ │ name, description │ │    │ │ email, password   │ │
+│ │ type: SUBSCRIPTION│ │    │ │ firebase_uid      │ │
+│ │       ONE_TIME    │ │    │ └───────────────────┘ │
+│ │ metadata (JSONB)  │ │    └───────────┬───────────┘
+│ └───────────────────┘ │                │
+└─────────┬─────────────┘                │
+          │                              │
+          │                    ┌─────────┴─────────────┐
+┌─────────▼─────────────┐      │                       │
+│        PRICE          │  ┌───▼──────────┐   ┌───────▼──────┐
+│ ┌───────────────────┐ │  │SUBSCRIPTION  │   │    ORDER     │
+│ │ id, product_id    │ │  │ ┌──────────┐ │   │ ┌──────────┐ │
+│ │ amount, currency  │ │  │ │price_id  │ │   │ │items []  │ │
+│ │ type: RECURRING   │ │  │ │status    │ │   │ │total     │ │
+│ │       ONE_TIME    │ │  │ │period    │ │   │ │status    │ │
+│ │ recurring_interval│ │  │ └──────────┘ │   │ └──────────┘ │
+│ │ stripe_price_id   │ │  └──────────────┘   └──────────────┘
+│ └───────────────────┘ │   (recorrente)      (pagamento único)
+└───────────────────────┘
+```
+
+### Fluxo de Checkout Híbrido
+
+```java
+// 1. Cliente seleciona produto
+Product product = productRepository.findById(productId);
+
+// 2. Sistema decide tipo de checkout baseado no ProductType
+if (product.getType() == ProductType.SUBSCRIPTION) {
+    // Checkout de assinatura
+    SessionCreateParams params = SessionCreateParams.builder()
+        .setMode(SessionCreateParams.Mode.SUBSCRIPTION)  // ← Importante
+        .addLineItem(...)
+        .build();
+    
+    // Webhook: checkout.session.completed → criar registro em subscriptions
+    
+} else if (product.getType() == ProductType.ONE_TIME) {
+    // Checkout de e-commerce
+    SessionCreateParams params = SessionCreateParams.builder()
+        .setMode(SessionCreateParams.Mode.PAYMENT)  // ← Importante
+        .addLineItem(...)
+        .build();
+    
+    // Webhook: checkout.session.completed → criar registro em orders
+}
+```
+
+### Webhook Handler Inteligente
+
+```java
+@PostMapping("/webhooks/stripe")
+public ResponseEntity<Void> handleStripeWebhook(
+    @RequestBody String payload,
+    @RequestHeader("Stripe-Signature") String signature
+) {
+    Event event = Webhook.constructEvent(payload, signature, webhookSecret);
+    
+    if ("checkout.session.completed".equals(event.getType())) {
+        Session session = extractSession(event);
+        
+        // Decisão baseada no mode da session
+        if ("subscription".equals(session.getMode())) {
+            subscriptionService.createFromCheckout(session);  // → tabela subscriptions
+        } else if ("payment".equals(session.getMode())) {
+            orderService.createFromCheckout(session);  // → tabela orders
+        }
+    }
+    
+    return ResponseEntity.ok().build();
+}
+```
+
+### Entidades Principais
+
+**Product** (substitui Plan):
+```java
+@Entity
+@Table(name = "products")
+public class Product {
+    @Id @GeneratedValue
+    private Long id;
+    
+    @ManyToOne
+    private Organization organization;
+    
+    private String name;
+    private String description;
+    
+    @Enumerated(EnumType.STRING)
+    private ProductType type;  // SUBSCRIPTION ou ONE_TIME
+    
+    @Type(JsonType.class)
+    private Map<String, Object> metadata;  // JSONB flexível
+    
+    private Boolean isActive;
+}
+```
+
+**Price** (múltiplos preços por produto):
+```java
+@Entity
+@Table(name = "prices")
+public class Price {
+    @Id @GeneratedValue
+    private Long id;
+    
+    @ManyToOne
+    private Product product;
+    
+    private BigDecimal amount;
+    private String currency;
+    
+    @Enumerated(EnumType.STRING)
+    private PriceType type;  // RECURRING ou ONE_TIME
+    
+    private String recurringInterval;  // "month", "year" ou NULL
+    
+    private String stripePriceId;
+}
+```
+
+### Commerce Mode por Organização
+
+Cada organização pode operar em 3 modos:
+
+```java
+public enum CommerceMode {
+    SUBSCRIPTIONS_ONLY,  // Apenas assinaturas (SaaS)
+    ECOMMERCE_ONLY,      // Apenas e-commerce (loja online)
+    HYBRID               // Ambos (plataforma completa)
+}
+```
+
+**Exemplo de uso:**
+```java
+Organization org = user.getOrganization();
+
+if (org.getCommerceMode() == CommerceMode.SUBSCRIPTIONS_ONLY) {
+    // Mostrar apenas produtos do tipo SUBSCRIPTION
+    // Bloquear criação de produtos ONE_TIME
+}
+
+if (org.getCommerceMode() == CommerceMode.HYBRID) {
+    // Mostrar abas: "Planos" e "Produtos"
+    // Permitir ambos os tipos
+}
+```
+
+### Referência Completa
+
+📖 Para schemas SQL completos, exemplos de código, e checklist de implementação:  
+→ **[17-ARQUITETURA-HIBRIDA.md](./17-ARQUITETURA-HIBRIDA.md)**
 
 ---
 

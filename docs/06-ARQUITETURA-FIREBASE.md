@@ -1,8 +1,31 @@
 # 🔥 Arquitetura Firebase - Nova Diretriz Arquitetural
 
-> **Status:** ⚠️ **MUDANÇA ARQUITETURAL COMPLETA**  
-> **Data:** Outubro 2025  
-> **Impacto:** Substituição total do backend Java/PostgreSQL por Firebase
+> 📚 **STATUS: DOCUMENTO DE REFERÊNCIA HISTÓRICA**  
+> **Decisão Final:** ✅ **Continuamos com Java/Spring Boot + PostgreSQL**  
+> 
+> **Este documento descreve uma análise de migração para Firebase que NÃO foi implementada.**  
+> Mantenha-o apenas para:
+> - 🎓 Comparação acadêmica de arquiteturas
+> - 📊 Análise de trade-offs (Firebase vs Backend tradicional)
+> - 💡 Referência para futuros projetos
+>
+> **🏗️ Arquitetura ATUAL:**
+> - **Backend:** Java 21 + Spring Boot 3
+> - **Database:** PostgreSQL 15
+> - **Auth:** JWT + Firebase Auth (híbrido)
+> - **Pagamentos:** Stripe SDK (integração direta)
+>
+> **📖 Para a arquitetura implementada, leia:**  
+> - [02-ARQUITETURA.md](./02-ARQUITETURA.md) - Clean Architecture (Java)
+> - [07-AUTENTICACAO-HIBRIDA.md](./07-AUTENTICACAO-HIBRIDA.md) - JWT + Firebase Auth
+> - [17-ARQUITETURA-HIBRIDA.md](./17-ARQUITETURA-HIBRIDA.md) - Products + Prices
+
+---
+
+## ⚠️ AVISO: Conteúdo Abaixo É Apenas Referência
+
+Este documento foi mantido para fins históricos e educacionais.  
+**NÃO implemente nada descrito aqui sem aprovação explícita.**
 
 ---
 
@@ -21,13 +44,13 @@
 
 ---
 
-## 🎯 Visão Geral
+## 🎯 Visão Geral (REFERÊNCIA HISTÓRICA)
 
-### Premissa Fundamental
+### Premissa Fundamental (NÃO IMPLEMENTADA)
 
-**TODA a arquitetura do projeto de gestão de mensalidades será baseada na plataforma Firebase.**
+Este documento descreve uma análise de migração para Firebase que foi considerada mas **não implementada**.
 
-As instruções anteriores sobre backend Java/Spring Boot com PostgreSQL estão **obsoletas** e devem ser desconsideradas.
+As instruções anteriores sobre backend Java/Spring Boot com PostgreSQL continuam **válidas e são a arquitetura oficial**.
 
 ### Projeto Atual vs. Nova Arquitetura
 

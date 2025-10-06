@@ -1,29 +1,55 @@
 # 📋 Plano de Migração: Java/PostgreSQL → Firebase
 
-> **Status:** 🟡 **PLANEJAMENTO**  
-> **Impacto:** 🔴 **CRÍTICO** - Reescrita arquitetural completa  
-> **Estimativa:** 3-5 dias (vs. 4-6 semanas no backend Java)
+> 📚 **STATUS: DOCUMENTO DE REFERÊNCIA HISTÓRICA**  
+> **Decisão Final:** ✅ **Continuamos com Java/Spring Boot + PostgreSQL**  
+> 
+> **Este documento descreve um plano de migração para Firebase que NÃO foi executado.**  
+> 
+> **✅ Arquitetura Confirmada (ATUAL):**
+> - **Backend:** Java 21 + Spring Boot 3
+> - **Database:** PostgreSQL 15
+> - **Auth:** JWT + Firebase Auth (híbrido)
+> - **Pagamentos:** Stripe SDK
+>
+> **📖 Para a arquitetura implementada, leia:**  
+> - [02-ARQUITETURA.md](./02-ARQUITETURA.md) - Clean Architecture  
+> - [07-AUTENTICACAO-HIBRIDA.md](./07-AUTENTICACAO-HIBRIDA.md) - Autenticação híbrida  
+> - [17-ARQUITETURA-HIBRIDA.md](./17-ARQUITETURA-HIBRIDA.md) - Products + Prices
+>
+> **Mantenha este documento apenas como referência para:**
+> - Comparação de complexidade entre stacks
+> - Análise de custos Firebase vs VPS
+> - Futuros projetos que considerem Firebase
 
 ---
 
-## 📊 Sumário Executivo
+## ⚠️ AVISO: Conteúdo Abaixo É Apenas Referência
 
-### Situação Atual
+**NÃO execute as etapas descritas abaixo.**  
+**A migração para Firebase foi DESCARTADA.**
 
-- ✅ **Backend Java Spring Boot** completo (Fase 3 - Autenticação JWT)
-- ✅ **12 commits** organizados (Conventional Commits)
+---
+
+## 📊 Sumário Executivo (REFERÊNCIA HISTÓRICA)
+
+### Situação Atual (CONFIRMADA)
+
+- ✅ **Backend Java Spring Boot** completo e em produção
 - ✅ **PostgreSQL + Docker** configurado
 - ✅ **Stripe SDK** integração direta
-- ✅ **Compilação bem-sucedida** com Java 21
+- ✅ **Autenticação Híbrida** (JWT + Firebase Auth)
+- ✅ **Clean Architecture** implementada
 
-### Situação Futura (Firebase)
+### Situação Alternativa Considerada (NÃO IMPLEMENTADA)
 
-- 🔄 **Frontend SPA** (React/Vue/Angular)
-- 🔄 **Firebase Authentication** (substitui JWT)
-- 🔄 **Cloud Firestore** (substitui PostgreSQL)
-- 🔄 **Cloud Functions TypeScript** (substitui Spring Boot)
-- 🔄 **Stripe Extension** (substitui SDK direto)
-- 🔄 **Firebase Hosting** (hospedagem automática)
+Esta seção descreve uma análise de Firebase que foi estudada mas não implementada:
+
+- ❌ **Frontend SPA** (React/Vue/Angular)
+- ❌ **Firebase Authentication** (substituir JWT)
+- ❌ **Cloud Firestore** (substituir PostgreSQL)
+- ❌ **Cloud Functions TypeScript** (substituir Spring Boot)
+- ❌ **Stripe Extension** (substituir SDK direto)
+- ❌ **Firebase Hosting** (hospedagem automática)
 
 ### Impacto da Mudança
 
