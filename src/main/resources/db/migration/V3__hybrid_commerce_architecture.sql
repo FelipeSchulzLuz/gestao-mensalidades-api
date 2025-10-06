@@ -124,12 +124,30 @@ ALTER TABLE users ADD COLUMN IF NOT EXISTS organization_id BIGINT REFERENCES org
 CREATE INDEX IF NOT EXISTS idx_user_organization ON users(organization_id);
 COMMENT ON COLUMN users.organization_id IS 'Organização à qual o usuário pertence (multi-tenant)';
 
--- PARTE 6: ATUALIZAR SUBSCRIPTIONS
-ALTER TABLE subscriptions RENAME COLUMN plan_id TO plan_id_deprecated;
-ALTER TABLE subscriptions ADD COLUMN IF NOT EXISTS price_id BIGINT REFERENCES prices(id);
-CREATE INDEX IF NOT EXISTS idx_subscription_price ON subscriptions(price_id);
-COMMENT ON COLUMN subscriptions.plan_id_deprecated IS '⚠️ DEPRECATED: Antiga referência a plans. Use price_id agora.';
-COMMENT ON COLUMN subscriptions.price_id IS 'Referência ao preço (recorrente) que o usuário está assinando';
+-- PARTE 6: ATUALIZAR SUBSCRIPTIONS (se existir)
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'subscriptions') THEN
+        -- Renomear plan_id para plan_id_deprecated (se existir)
+        IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'subscriptions' AND column_name = 'plan_id') THEN
+            ALTER TABLE subscriptions RENAME COLUMN plan_id TO plan_id_deprecated;
+        END IF;
+        
+        -- Adicionar price_id
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'subscriptions' AND column_name = 'price_id') THEN
+            ALTER TABLE subscriptions ADD COLUMN price_id BIGINT REFERENCES prices(id);
+        END IF;
+        
+        -- Criar índice
+        IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE tablename = 'subscriptions' AND indexname = 'idx_subscription_price') THEN
+            CREATE INDEX idx_subscription_price ON subscriptions(price_id);
+        END IF;
+        
+        -- Comentários
+        EXECUTE 'COMMENT ON COLUMN subscriptions.plan_id_deprecated IS ''⚠️ DEPRECATED: Antiga referência a plans. Use price_id agora.''';
+        EXECUTE 'COMMENT ON COLUMN subscriptions.price_id IS ''Referência ao preço (recorrente) que o usuário está assinando''';
+    END IF;
+END $$;
 
 -- PARTE 7: MIGRAÇÃO DE DADOS
 -- Criar organização padrão
@@ -140,25 +158,46 @@ ON CONFLICT (slug) DO NOTHING;
 -- Atualizar users sem organização
 UPDATE users SET organization_id = (SELECT id FROM organizations WHERE slug = 'default' LIMIT 1) WHERE organization_id IS NULL;
 
--- Migrar plans → products
-INSERT INTO products (organization_id, name, description, type, is_active, is_featured, display_order, features, stripe_product_id, created_at, updated_at)
-SELECT (SELECT id FROM organizations WHERE slug = 'default' LIMIT 1), p.name, p.description, 'SUBSCRIPTION', p.is_active, p.is_featured, p.display_order, p.features, p.stripe_product_id, p.created_at, p.updated_at
-FROM plans p
-WHERE NOT EXISTS (SELECT 1 FROM products pr WHERE pr.stripe_product_id = p.stripe_product_id AND p.stripe_product_id IS NOT NULL);
+-- Migrar plans → products (apenas se tabela plans existir)
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'plans') THEN
+        INSERT INTO products (organization_id, name, description, type, is_active, is_featured, display_order, features, stripe_product_id, created_at, updated_at)
+        SELECT (SELECT id FROM organizations WHERE slug = 'default' LIMIT 1), p.name, p.description, 'SUBSCRIPTION', p.is_active, p.is_featured, p.display_order, p.features, p.stripe_product_id, p.created_at, p.updated_at
+        FROM plans p
+        WHERE NOT EXISTS (SELECT 1 FROM products pr WHERE pr.stripe_product_id = p.stripe_product_id AND p.stripe_product_id IS NOT NULL);
+    END IF;
+END $$;
 
--- Migrar plans → prices
-INSERT INTO prices (product_id, amount, currency, type, recurring_interval, recurring_interval_count, is_active, stripe_price_id, created_at)
-SELECT pr.id, p.price, 'BRL', 'RECURRING', p.billing_period, 1, p.is_active, p.stripe_price_id, p.created_at
-FROM plans p
-INNER JOIN products pr ON pr.stripe_product_id = p.stripe_product_id
-WHERE NOT EXISTS (SELECT 1 FROM prices pc WHERE pc.stripe_price_id = p.stripe_price_id AND p.stripe_price_id IS NOT NULL);
+-- Migrar plans → prices (apenas se tabela plans existir)
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'plans') THEN
+        INSERT INTO prices (product_id, amount, currency, type, recurring_interval, recurring_interval_count, is_active, stripe_price_id, created_at)
+        SELECT pr.id, p.price, 'BRL', 'RECURRING', p.billing_period, 1, p.is_active, p.stripe_price_id, p.created_at
+        FROM plans p
+        INNER JOIN products pr ON pr.stripe_product_id = p.stripe_product_id
+        WHERE NOT EXISTS (SELECT 1 FROM prices pc WHERE pc.stripe_price_id = p.stripe_price_id AND p.stripe_price_id IS NOT NULL);
+    END IF;
+END $$;
 
--- Atualizar subscriptions
-UPDATE subscriptions s SET price_id = pr.id
-FROM plans p
-INNER JOIN products prod ON prod.stripe_product_id = p.stripe_product_id
-INNER JOIN prices pr ON pr.product_id = prod.id
-WHERE s.plan_id_deprecated = p.id AND s.price_id IS NULL;
+-- Atualizar subscriptions (apenas se existir)
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'subscriptions') 
+       AND EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'plans') THEN
+        UPDATE subscriptions s SET price_id = pr.id
+        FROM plans p
+        INNER JOIN products prod ON prod.stripe_product_id = p.stripe_product_id
+        INNER JOIN prices pr ON pr.product_id = prod.id
+        WHERE s.plan_id_deprecated = p.id AND s.price_id IS NULL;
+    END IF;
+END $$;
 
--- PARTE 8: DEPRECAR PLANS
-COMMENT ON TABLE plans IS '⚠️ DEPRECATED: Substituída por products + prices. Mantida temporariamente para rollback.';
+-- PARTE 8: DEPRECAR PLANS (apenas se existir)
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'plans') THEN
+        EXECUTE 'COMMENT ON TABLE plans IS ''⚠️ DEPRECATED: Substituída por products + prices. Mantida temporariamente para rollback.''';
+    END IF;
+END $$;

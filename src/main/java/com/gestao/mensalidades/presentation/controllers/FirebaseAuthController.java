@@ -1,10 +1,10 @@
 package com.gestao.mensalidades.presentation.controllers;
 
-import com.gestao.mensalidades.application.services.UserService;
-import com.gestao.mensalidades.domain.entities.User;
-import com.gestao.mensalidades.domain.enums.UserRole;
-import com.gestao.mensalidades.infrastructure.persistence.repositories.UserRepository;
-import com.gestao.mensalidades.infrastructure.security.FirebaseTokenProvider;
+import br.com.gestaomensalidades.gestao_mensalidades_api.application.services.UserService;
+import br.com.gestaomensalidades.gestao_mensalidades_api.domain.entities.User;
+import br.com.gestaomensalidades.gestao_mensalidades_api.domain.enums.UserRole;
+import br.com.gestaomensalidades.gestao_mensalidades_api.infrastructure.persistence.repositories.UserRepository;
+import br.com.gestaomensalidades.gestao_mensalidades_api.infrastructure.security.FirebaseTokenProvider;
 import com.google.firebase.auth.FirebaseToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -274,7 +274,7 @@ public class FirebaseAuthController {
             User user = userOptional.get();
 
             // Verificar se usuário está ativo
-            if (!user.isActive()) {
+            if (!user.getIsActive()) {
                 logger.warn("Tentativa de login de usuário inativo: {}", user.getEmail());
                 return ResponseEntity
                         .status(HttpStatus.FORBIDDEN)
@@ -374,7 +374,7 @@ public class FirebaseAuthController {
         userMap.put("organizationId", user.getOrganizationId());
         userMap.put("role", user.getRole().name());
         userMap.put("authMethod", user.usesFirebaseAuth() ? "FIREBASE" : "JWT");
-        userMap.put("active", user.isActive());
+        userMap.put("active", user.getIsActive());
         userMap.put("createdAt", user.getCreatedAt());
         return userMap;
     }
