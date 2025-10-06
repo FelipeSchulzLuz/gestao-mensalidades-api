@@ -3,6 +3,7 @@ plugins {
 	id 'org.springframework.boot' version '3.5.6'
 	id 'io.spring.dependency-management' version '1.1.7'
     id 'org.flywaydb.flyway' version '11.13.2'
+	id 'jacoco'
 }
 
 group = 'br.com.gestaomensalidades'
@@ -54,4 +55,40 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+	finalizedBy jacocoTestReport // Gerar relatório de cobertura após os testes
+}
+
+// Configuração do Jacoco para relatórios de cobertura de testes
+jacoco {
+	toolVersion = "0.8.12"
+}
+
+jacocoTestReport {
+	dependsOn test // Garantir que os testes sejam executados antes
+	reports {
+		xml.required = true
+		html.required = true
+		csv.required = false
+	}
+	afterEvaluate {
+		classDirectories.setFrom(files(classDirectories.files.collect {
+			fileTree(dir: it, exclude: [
+				'**/config/**',
+				'**/dto/**',
+				'**/entities/**',
+				'**/enums/**',
+				'**/*Application.class'
+			])
+		}))
+	}
+}
+
+jacocoTestCoverageVerification {
+	violationRules {
+		rule {
+			limit {
+				minimum = 0.70 // Cobertura mínima de 70%
+			}
+		}
+	}
 }
