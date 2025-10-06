@@ -11,16 +11,19 @@ Este documento serve como índice centralizado de toda a documentação do proje
 ### Para Novos Desenvolvedores
 
 1. **README.md** (raiz) - Visão geral do projeto
-2. **01-INICIO-RAPIDO.md** - Configure e rode o projeto
-3. **02-ARQUITETURA.md** - Entenda a arquitetura
-4. **09-CHECKLIST-DESENVOLVIMENTO.md** - Veja as tarefas
+2. **18-MUDANCA-ARQUITETURAL-RESUMO.md** - 🚨 **LEIA ANTES DE CODIFICAR!**
+3. **17-ARQUITETURA-HIBRIDA.md** - 🆕 Arquitetura completa (30 min)
+4. **01-INICIO-RAPIDO.md** - Configure e rode o projeto
+5. **02-ARQUITETURA.md** - Entenda a arquitetura Clean
+6. **09-CHECKLIST-DESENVOLVIMENTO.md** - Veja as tarefas
 
 ### Para Desenvolvimento Ativo
 
-1. **09-CHECKLIST-DESENVOLVIMENTO.md** - Tarefas pendentes
-2. **99-STATUS.md** - Progresso atual
-3. **05-PLANOS.md** - Arquitetura de planos (próxima implementação)
-4. **04-STRIPE.md** - Referência de integração Stripe
+1. **18-MUDANCA-ARQUITETURAL-RESUMO.md** - 🚨 Resumo executivo da mudança
+2. **17-ARQUITETURA-HIBRIDA.md** - 🔥 Especificação técnica completa
+3. **09-CHECKLIST-DESENVOLVIMENTO.md** - Tarefas pendentes (será atualizado)
+4. **99-STATUS.md** - Progresso atual
+5. **04-STRIPE.md** - Referência de integração Stripe
 
 ### ⚠️ Arquitetura Confirmada: Java/Spring Boot
 
@@ -137,6 +140,47 @@ Este documento serve como índice centralizado de toda a documentação do proje
 **Descrição:** Tracking de progresso e próximos passos.  
 **Quando usar:** Reuniões de status, planejamento de sprints.
 
+#### 🏗️ [17-ARQUITETURA-HIBRIDA.md](./17-ARQUITETURA-HIBRIDA.md) 🆕 **FUNDAMENTAL**
+**Descrição:** 🔥 **Nova arquitetura: De "Planos" para "Produtos + Preços"**  
+**Quando usar:** **LEIA ANTES DE QUALQUER IMPLEMENTAÇÃO!**  
+**Conteúdo:**
+- **Mudança de paradigma:** Plan → Product + Price
+- **Multi-tenant:** Organizações com commerce_mode
+- **Híbrido:** Suporte a assinaturas + e-commerce
+- **Modelo espelhado:** Alinhado com Stripe
+- **Schema completo:** organizations, products, prices, orders
+- **Fluxos de checkout:** subscription vs payment
+- **Webhooks inteligentes:** Decisão baseada em mode
+- **Checklist de migração:** 6 fases
+
+**Tempo de leitura:** 30 minutos  
+**Impacto:** 🔴 **CRÍTICO** - Refatoração arquitetural completa  
+**Status:** ✅ Aprovado - Pronto para implementação  
+**Pré-requisitos:** Entender 02-ARQUITETURA.md e 04-STRIPE.md
+
+---
+
+#### 🚨 [18-MUDANCA-ARQUITETURAL-RESUMO.md](./18-MUDANCA-ARQUITETURAL-RESUMO.md) **OBRIGATÓRIO**
+**Descrição:** 🚨 **Resumo executivo: LEIA ANTES DE CODIFICAR!**  
+**Quando usar:** **Antes de qualquer implementação, PRs, code reviews**  
+**Conteúdo:**
+- **TL;DR:** O que mudou e por quê
+- **Checklist rápido:** 5 perguntas antes de codificar
+- **Modelo mental:** Product, Price, CommerceMode
+- **Guias de decisão:** Quando criar o quê
+- **Comparação visual:** Schema antes vs depois
+- **Exemplos práticos:** Código Java completo
+- **Armadilhas comuns:** ❌ Erros vs ✅ Correto
+- **FAQ:** Perguntas frequentes
+
+**Tempo de leitura:** 5-10 minutos  
+**Impacto:** 🚨 **BLOQUEANTE** - Evita refatoração e bugs  
+**Status:** ✅ Aprovado - Leitura obrigatória para todos  
+**Público:** Todos desenvolvedores (frontend, backend, fullstack)  
+**Complemento:** Ver 17-ARQUITETURA-HIBRIDA.md para especificação completa
+
+---
+
 #### 📊 [99-STATUS.md](./99-STATUS.md)
 **Descrição:** Status atual do projeto e próximos passos.  
 **Quando usar:** Check rápido de progresso, definir prioridades.
@@ -196,7 +240,9 @@ Este documento serve como índice centralizado de toda a documentação do proje
 
 ---
 
-#### 📦 [05-PLANOS.md](./05-PLANOS.md)
+#### 📦 [05-PLANOS.md](./05-PLANOS.md) ⚠️ **DEPRECATED**
+**Status:** ⚠️ **OBSOLETO** - Substituído por 17-ARQUITETURA-HIBRIDA.md  
+**Motivo:** Modelo "Plan" foi substituído por "Product + Price"
 **Descrição:** Arquitetura de gerenciamento de planos (admin panel + sincronização Stripe).  
 **Quando usar:** Implementar Fase 7 (Módulo de Planos), entender estratégia de sincronização.  
 **Conteúdo:**
@@ -293,16 +339,19 @@ Este documento serve como índice centralizado de toda a documentação do proje
 → **01-INICIO-RAPIDO.md**
 
 ### Preciso entender a arquitetura do código
-→ **02-ARQUITETURA.md**
+→ **18-MUDANCA-ARQUITETURAL-RESUMO.md** → **17-ARQUITETURA-HIBRIDA.md** → **02-ARQUITETURA.md**
 
 ### Tenho problemas com Docker
 → **03-DOCKER.md** (seção Troubleshooting)
 
 ### Preciso implementar integração com Stripe
-→ **04-STRIPE.md** + **05-PLANOS.md**
+→ **04-STRIPE.md** + **17-ARQUITETURA-HIBRIDA.md**
 
 ### Quero saber o que fazer agora
-→ **CHECKLIST_DESENVOLVIMENTO.md** + **99-STATUS.md**
+→ **09-CHECKLIST-DESENVOLVIMENTO.md** + **99-STATUS.md**
+
+### Vou começar a codificar agora
+→ 🚨 **18-MUDANCA-ARQUITETURAL-RESUMO.md** (5 min) + **17-ARQUITETURA-HIBRIDA.md** (30 min)
 
 ### Preciso rodar o projeto rapidamente
 → **README.md** (seção "Executar em 3 Passos")
@@ -383,6 +432,8 @@ Este documento serve como índice centralizado de toda a documentação do proje
 | 14-IMPLEMENTACAO-COMPLETA.md | ✅ Completo | 2025-10-05 |
 | 15-PLANO-MIGRACAO.md | ⚠️ Referência | 2025-01-05 |
 | 16-PROGRESSO.md | ✅ Completo | 2025-10-05 |
+| 17-ARQUITETURA-HIBRIDA.md | 🔴 CRÍTICO | 2025-10-05 |
+| 18-MUDANCA-ARQUITETURAL-RESUMO.md | 🚨 OBRIGATÓRIO | 2025-10-05 |
 | 99-STATUS.md | ✅ Completo | 2025-01-04 |
 
 ---
