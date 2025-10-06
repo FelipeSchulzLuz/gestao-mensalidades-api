@@ -56,6 +56,17 @@ public class JwtTokenProvider {
      * @return Token JWT assinado
      */
     public String generateTokenFromUsername(String username) {
+        return generateTokenFromUsername(username, "ROLE_USER");
+    }
+    
+    /**
+     * Gera um token JWT a partir do username (email) e role.
+     * 
+     * @param username Username do usuário (email)
+     * @param role Role do usuário (ROLE_USER ou ROLE_ADMIN)
+     * @return Token JWT assinado
+     */
+    public String generateTokenFromUsername(String username, String role) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtExpirationMs);
         
@@ -63,6 +74,7 @@ public class JwtTokenProvider {
         
         return Jwts.builder()
                 .setSubject(username)
+                .claim("role", role)
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .signWith(key, SignatureAlgorithm.HS512)
@@ -85,6 +97,38 @@ public class JwtTokenProvider {
                 .getPayload();
         
         return claims.getSubject();
+    }
+    
+    /**
+     * Extrai o email do usuário do token JWT.
+     * Alias para getUsernameFromToken() para consistência com Firebase.
+     * 
+     * @param token Token JWT
+     * @return Email extraído do token
+     */
+    public String getEmailFromToken(String token) {
+        return getUsernameFromToken(token);
+    }
+    
+    /**
+     * Extrai a role do usuário do token JWT.
+     * 
+     * @param token Token JWT
+     * @return Role do usuário (ROLE_USER ou ROLE_ADMIN)
+     */
+    public String getRoleFromToken(String token) {
+        SecretKey key = getSigningKey();
+        
+        Claims claims = Jwts.parser()
+                .verifyWith(key)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+        
+        // Retornar role do claim ou ROLE_USER como padrão
+        return claims.get("role", String.class) != null 
+            ? claims.get("role", String.class) 
+            : "ROLE_USER";
     }
     
     /**
