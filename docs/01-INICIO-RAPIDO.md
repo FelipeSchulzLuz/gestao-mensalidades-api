@@ -298,7 +298,7 @@ taskkill /PID <PID> /F
 - **Docker:** `03-DOCKER.md` - Guia completo do Docker
 - **Stripe:** `04-STRIPE.md` - Guia completo do Stripe CLI
 - **Credenciais:** `../CREDENCIAIS.md` - Todas senhas e acessos
-- **Arquitetura:** `05-PLANOS.md` - Gerenciamento de planos
+- **Arquitetura:** `17-ARQUITETURA-HIBRIDA.md` - Products + Prices (híbrido)
 - **Portas:** `PORTAS_DOCKER.md` - Referência de portas
 
 ---
