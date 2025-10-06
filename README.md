@@ -1,30 +1,64 @@
 # 🎯 Gestão de Mensalidades API
 
-> **API REST para gerenciamento de assinaturas e mensalidades com integração Stripe**
+> **Plataforma de comércio híbrida: assinaturas recorrentes + e-commerce integrados com Stripe**
 
-Sistema completo para gestão de assinaturas recorrentes desenvolvido com Java 21 + Spring Boot 3.5.6. Perfeito para ONGs, academias, escolas e pequenos negócios que precisam automatizar cobranças recorrentes.
+Sistema completo desenvolvido com Java 21 + Spring Boot 3.5.6 seguindo Clean Architecture. Suporta **assinaturas recorrentes** (SaaS, planos mensais) e **e-commerce** (vendas únicas) na mesma plataforma.
 
 ---
 
 ## 🚀 Quick Start
 
-**Nunca rodou o projeto?** Comece aqui:
+**Escolha seu perfil:**
 
-👉 **[docs/01-INICIO-RAPIDO.md](docs/01-INICIO-RAPIDO.md)** - Guia completo de configuração e execução
+### 👶 Novo no Projeto
+👉 **[docs/LEIA-ME.md](docs/LEIA-ME.md)** - Porta de entrada única com fluxos guiados
+
+### � Vou Desenvolver Agora
+1. **[docs/18-MUDANCA-ARQUITETURAL-RESUMO.md](docs/18-MUDANCA-ARQUITETURAL-RESUMO.md)** (10 min - OBRIGATÓRIO)
+2. **[docs/GUIA-RAPIDO.md](docs/GUIA-RAPIDO.md)** (comandos e referências)
+
+### 🔧 Setup do Ambiente
+�👉 **[docs/01-INICIO-RAPIDO.md](docs/01-INICIO-RAPIDO.md)** - Docker + Stripe + API
 
 ---
 
-## 📚 Documentação
+## 📚 Documentação Essencial
 
-| Documento | Descrição |
-|-----------|-----------|
-| **[CHECKLIST_DESENVOLVIMENTO.md](CHECKLIST_DESENVOLVIMENTO.md)** | ✅ Checklist completo das 14 fases de desenvolvimento |
-| **[docs/01-INICIO-RAPIDO.md](docs/01-INICIO-RAPIDO.md)** | 🏁 Guia de início rápido (Docker + Stripe + API) |
-| **[docs/02-ARQUITETURA.md](docs/02-ARQUITETURA.md)** | 🏗️ Arquitetura Clean Architecture e padrões |
-| **[docs/03-DOCKER.md](docs/03-DOCKER.md)** | 🐳 Configuração Docker (PostgreSQL, pgAdmin, Redis) |
-| **[docs/04-STRIPE.md](docs/04-STRIPE.md)** | 💳 Integração com Stripe e webhooks |
-| **[docs/05-PLANOS.md](docs/05-PLANOS.md)** | 📦 Arquitetura de gerenciamento de planos |
-| **[docs/99-STATUS.md](docs/99-STATUS.md)** | 📊 Status atual do projeto e progresso |
+| Documento | Propósito | Quando Ler |
+|-----------|-----------|------------|
+| **[docs/LEIA-ME.md](docs/LEIA-ME.md)** | 🚪 Porta de entrada única | Primeiro acesso |
+| **[docs/18-MUDANCA-ARQUITETURAL-RESUMO.md](docs/18-MUDANCA-ARQUITETURAL-RESUMO.md)** | 🚨 Leia antes de codificar | Antes de qualquer código |
+| **[docs/17-ARQUITETURA-HIBRIDA.md](docs/17-ARQUITETURA-HIBRIDA.md)** | 🏗️ Arquitetura completa | Referência detalhada |
+| **[docs/GUIA-RAPIDO.md](docs/GUIA-RAPIDO.md)** | ⚡ Comandos e padrões | Consulta diária |
+| **[docs/STATUS-GERAL.md](docs/STATUS-GERAL.md)** | � Status consolidado | Ver progresso |
+| **[docs/09-CHECKLIST-DESENVOLVIMENTO.md](docs/09-CHECKLIST-DESENVOLVIMENTO.md)** | ✅ Tarefas pendentes | Planejar trabalho |
+
+**📁 Documentação completa:** 23 documentos organizados em [docs/](docs/)
+
+---
+
+## 🏗️ Arquitetura (Atualizada Out/2025)
+
+### Modelo Híbrido: Products + Prices
+
+```
+Organization (commerce_mode: SUBSCRIPTIONS | ECOMMERCE | HYBRID)
+    │
+    ├── Products (type: SUBSCRIPTION | ONE_TIME)
+    │       └── Prices (type: RECURRING | ONE_TIME)
+    │
+    ├── Users
+    │
+    ├── Subscriptions (assinaturas recorrentes)
+    │
+    └── Orders (compras únicas)
+```
+
+**Checkout Inteligente:**
+- Product `SUBSCRIPTION` → Stripe mode `subscription` → Tabela `subscriptions`
+- Product `ONE_TIME` → Stripe mode `payment` → Tabela `orders`
+
+📖 **Detalhes:** [17-ARQUITETURA-HIBRIDA.md](docs/17-ARQUITETURA-HIBRIDA.md)
 
 ---
 
