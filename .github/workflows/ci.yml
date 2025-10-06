@@ -48,7 +48,7 @@ jobs:
         uses: actions/checkout@v5
       
       - name: ☕ Setup Java ${{ matrix.java }}
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: ${{ matrix.java }}
@@ -115,7 +115,7 @@ jobs:
           fetch-depth: 0  # Full history for better analysis
       
       - name: ☕ Setup Java 21
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: 21
