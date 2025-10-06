@@ -32,6 +32,23 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByStripeCustomerId(String stripeCustomerId);
     
     /**
+     * Busca um usuário pelo Firebase UID
+     * @param firebaseUid UID do usuário no Firebase Authentication
+     * @return Optional contendo o usuário se encontrado
+     */
+    Optional<User> findByFirebaseUid(String firebaseUid);
+    
+    /**
+     * Busca um usuário pelo email OU Firebase UID.
+     * Útil para sistema híbrido onde não sabemos qual método foi usado.
+     * @param email email do usuário
+     * @param firebaseUid Firebase UID
+     * @return Optional contendo o usuário se encontrado
+     */
+    @Query("SELECT u FROM User u WHERE u.email = :email OR u.firebaseUid = :firebaseUid")
+    Optional<User> findByEmailOrFirebaseUid(@Param("email") String email, @Param("firebaseUid") String firebaseUid);
+    
+    /**
      * Verifica se existe um usuário com o email informado
      * @param email email a verificar
      * @return true se existir usuário com este email
@@ -44,6 +61,13 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * @return true se existir usuário com este Customer ID
      */
     boolean existsByStripeCustomerId(String stripeCustomerId);
+    
+    /**
+     * Verifica se existe um usuário com o Firebase UID informado
+     * @param firebaseUid Firebase UID a verificar
+     * @return true se existir usuário com este Firebase UID
+     */
+    boolean existsByFirebaseUid(String firebaseUid);
     
     /**
      * Busca usuários ativos
