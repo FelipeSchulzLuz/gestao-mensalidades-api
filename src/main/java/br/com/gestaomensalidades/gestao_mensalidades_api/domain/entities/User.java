@@ -19,10 +19,13 @@ import java.time.LocalDateTime;
  * @version 1.0
  */
 @Entity
-@Table(name = "users", indexes = {
-    @Index(name = "idx_user_email", columnList = "email", unique = true),
-    @Index(name = "idx_user_stripe_customer_id", columnList = "stripe_customer_id", unique = true)
-})
+@Table(name = "users", 
+    indexes = {
+        @Index(name = "idx_user_email", columnList = "email", unique = true),
+        @Index(name = "idx_user_stripe_customer_id", columnList = "stripe_customer_id", unique = true),
+        @Index(name = "idx_user_firebase_uid", columnList = "firebase_uid", unique = true)
+    }
+)
 @Getter
 @Setter
 @NoArgsConstructor
@@ -45,10 +48,28 @@ public class User {
     @Column(nullable = false, unique = true, length = 100)
     private String email;
     
-    @NotBlank(message = "Senha é obrigatória")
+    /**
+     * Senha hasheada com BCrypt (apenas para autenticação JWT própria).
+     * Null se usuário usa apenas Firebase Authentication.
+     */
     @Size(min = 8, message = "Senha deve ter no mínimo 8 caracteres")
-    @Column(nullable = false)
-    private String password; // Sempre hasheada com BCrypt
+    @Column(nullable = true)
+    private String password;
+    
+    /**
+     * UID do usuário no Firebase Authentication (apenas para autenticação Firebase).
+     * Null se usuário usa apenas autenticação JWT própria.
+     * Formato: caracteres alfanuméricos (28 caracteres típicos)
+     */
+    @Column(name = "firebase_uid", unique = true, length = 128)
+    private String firebaseUid;
+    
+    /**
+     * ID da organização à qual o usuário pertence (multi-tenancy).
+     * Todos os dados do usuário devem ser filtrados por esta organização.
+     */
+    @Column(name = "organization_id", nullable = true)
+    private Long organizationId;
     
     /**
      * ID do Customer correspondente no Stripe
@@ -102,5 +123,30 @@ public class User {
      */
     public boolean hasStripeCustomer() {
         return this.stripeCustomerId != null && !this.stripeCustomerId.isBlank();
+    }
+    
+    /**
+     * Verifica se o usuário usa autenticação JWT própria (email/senha)
+     * @return true se tiver senha configurada
+     */
+    public boolean usesJwtAuth() {
+        return this.password != null && !this.password.isBlank();
+    }
+    
+    /**
+     * Verifica se o usuário usa autenticação Firebase
+     * @return true se tiver Firebase UID configurado
+     */
+    public boolean usesFirebaseAuth() {
+        return this.firebaseUid != null && !this.firebaseUid.isBlank();
+    }
+    
+    /**
+     * Verifica se o usuário tem pelo menos um método de autenticação configurado.
+     * Método útil para validação de integridade.
+     * @return true se tiver senha OU Firebase UID
+     */
+    public boolean hasAuthMethod() {
+        return usesJwtAuth() || usesFirebaseAuth();
     }
 }
