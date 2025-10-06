@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ClassPathResource;
 
 import jakarta.annotation.PostConstruct;
@@ -31,6 +32,7 @@ import java.io.InputStream;
  */
 @Slf4j
 @Configuration
+@Profile("!test")
 public class FirebaseAdminConfig {
 
     /**
@@ -62,21 +64,27 @@ public class FirebaseAdminConfig {
         if (FirebaseApp.getApps().isEmpty()) {
             log.info("Inicializando Firebase Admin SDK...");
             
-            InputStream serviceAccount = getServiceAccountStream();
-            
-            FirebaseOptions.Builder optionsBuilder = FirebaseOptions.builder()
-                    .setCredentials(GoogleCredentials.fromStream(serviceAccount));
-            
-            // Adicionar project ID se configurado explicitamente
-            if (firebaseProjectId != null && !firebaseProjectId.isEmpty()) {
-                optionsBuilder.setProjectId(firebaseProjectId);
+            try {
+                InputStream serviceAccount = getServiceAccountStream();
+                
+                FirebaseOptions.Builder optionsBuilder = FirebaseOptions.builder()
+                        .setCredentials(GoogleCredentials.fromStream(serviceAccount));
+                
+                // Adicionar project ID se configurado explicitamente
+                if (firebaseProjectId != null && !firebaseProjectId.isEmpty()) {
+                    optionsBuilder.setProjectId(firebaseProjectId);
+                }
+                
+                FirebaseOptions options = optionsBuilder.build();
+                FirebaseApp.initializeApp(options);
+                
+                log.info("Firebase Admin SDK inicializado com sucesso!");
+                log.info("Project ID: {}", FirebaseApp.getInstance().getOptions().getProjectId());
+            } catch (IOException e) {
+                log.error("Falha ao inicializar Firebase Admin SDK: {}", e.getMessage());
+                log.warn("Firebase não estará disponível. Apenas autenticação JWT funcionará.");
+                throw e;
             }
-            
-            FirebaseOptions options = optionsBuilder.build();
-            FirebaseApp.initializeApp(options);
-            
-            log.info("Firebase Admin SDK inicializado com sucesso!");
-            log.info("Project ID: {}", FirebaseApp.getInstance().getOptions().getProjectId());
         } else {
             log.info("Firebase Admin SDK já estava inicializado.");
         }
