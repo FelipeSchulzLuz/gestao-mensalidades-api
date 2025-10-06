@@ -4,47 +4,32 @@ Este diretório contém scripts para gerenciar migrations e banco de dados.
 
 ---
 
-## 🖥️ Scripts por Plataforma
+## Scripts e fluxo recomendado
 
-### Windows (PowerShell - `.ps1`)
+Observação sobre Windows
 
-Uso em **desenvolvimento local Windows**:
+Os scripts PowerShell (`.ps1`) foram removidos deste repositório — a equipe padronizou o uso de Bash e containers. Se você estiver em Windows, use WSL2 para executar os scripts Bash, ou use os alvos do Makefile através do wrapper `scripts/run-make.sh`.
 
-```powershell
-# Recriar banco do zero
-.\scripts\recreate-database.ps1
+Linux/macOS (Bash - `.sh`)
 
-# Aplicar migration em banco existente
-.\scripts\apply-migration-existing-db.ps1
-
-# Aplicar via Docker
-.\scripts\apply-migration-docker.ps1
-
-# Instalar PostgreSQL client
-.\scripts\install-psql.ps1
-
-# Menu interativo com várias opções
-.\scripts\apply-migration-002.ps1
-```
-
----
-
-### Linux/macOS (Bash - `.sh`)
-
-Uso em **servidor Linux** ou desenvolvimento local Linux/macOS:
+Uso em **servidor Linux** ou desenvolvimento local Linux/macOS. Recomendamos usar o wrapper que invoca o Makefile para fluxo padronizado:
 
 ```bash
 # Dar permissão de execução (primeira vez)
 chmod +x scripts/*.sh
 
-# Recriar banco do zero
-./scripts/recreate-database.sh
+# Uso recomendado (vai copiar .env, rodar flyway e iniciar a app)
+./scripts/run-make.sh start
 
-# Aplicar migration em banco existente
-./scripts/apply-migration-existing-db.sh
-
-# Aplicar via Docker
-./scripts/apply-migration-docker.sh
+# Alternativa: executar passo a passo
+# 1) Preparar .env
+cp .env.docker .env
+# 2) Subir infra mínima
+docker compose up -d postgres redis pgadmin
+# 3) Rodar migrations via Flyway
+docker compose run --rm flyway
+# 4) Subir a aplicação
+docker compose up -d app
 ```
 
 ---
