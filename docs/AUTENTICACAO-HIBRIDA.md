@@ -1152,7 +1152,7 @@ FirebaseApp not initialized
 ### Exemplos Completos
 
 - **UserExampleController:** `/presentation/controllers/UserExampleController.java`
-- **FirebaseAuthController:** `/presentation/controllers/FirebaseAuthController.java`
+- **FirebaseAuthController:** `src/main/java/br/com/gestaomensalidades/gestao_mensalidades_api/presentation/controllers/FirebaseAuthController.java`
 - **UserService:** `/application/services/UserService.java`
 
 ### Próximos Passos
