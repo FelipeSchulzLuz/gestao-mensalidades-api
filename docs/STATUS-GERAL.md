@@ -8,8 +8,8 @@
 ## 🎯 Status Atual: Em Desenvolvimento Ativo
 
 **Versão:** 1.4.0  
-**Progresso Geral:** ~40% (Migration 003 aplicada ✅)  
-**Fase Atual:** Implementação das Entidades Java (Products + Prices)
+**Progresso Geral:** ~50% (Entidades e Repositories implementados ✅)  
+**Fase Atual:** Implementação dos Services (Products + Prices)
 
 ---
 
@@ -25,18 +25,21 @@
 
 ### 🚧 O Que Está em Andamento
 
-- **Migration 003:** Hybrid Commerce Architecture (SQL criada ✅, aguardando aplicação)
-- **Arquitetura Híbrida:** Documentação completa (implementação pendente)
-- **Products + Prices:** Nova estrutura (SQL pronta, entidades Java pendentes)
+- **Services Layer:** Implementação dos serviços de negócio (OrganizationService, ProductService, PriceService, OrderService)
+- **DTOs e Mappers:** Criação dos objetos de transferência e conversores
+- **Controllers REST:** Implementação dos endpoints da API
 
 ### ⏸️ Próximos Passos Críticos
 
 1. ✅ ~~Aplicar Migration 002~~ (Firebase Auth support) - **CONCLUÍDO**
 2. ✅ ~~Criar Migration 003~~ (Organizations, Products, Prices, Orders) - **CONCLUÍDO**
-3. **Aplicar Migration 003** (executar SQL no banco)
-4. **Implementar Entidades Novas** (Product, Price, Organization, Order em Java)
-5. **Refatorar Código Existente** (Plan → Product + Price)
-6. **Implementar Checkout Dual** (subscription + payment modes)
+3. ✅ ~~Aplicar Migration 003~~ (executar SQL no banco) - **CONCLUÍDO**
+4. ✅ ~~Implementar Entidades Novas~~ (Product, Price, Organization, Order em Java) - **CONCLUÍDO**
+5. ✅ ~~Implementar Repositories~~ (OrganizationRepository, ProductRepository, PriceRepository, OrderRepository) - **CONCLUÍDO**
+6. **Implementar Services** (OrganizationService, ProductService, PriceService, OrderService)
+7. **Criar DTOs e Mappers** (Request/Response DTOs)
+8. **Implementar Controllers REST** (Organization, Product, Price, Order endpoints)
+9. **Implementar Checkout Dual** (subscription + payment modes)
 
 ---
 
@@ -55,13 +58,14 @@ FASES COMPLETAS (3/14 - 21.4%)
 FASE CRÍTICA ATUAL
 ════════════════════════════════════════════════════════════
 
-🔥 Fase 3.5: Arquitetura Híbrida         ████████████████░░░░  80%
+✅ Fase 3.5: Arquitetura Híbrida         ████████████████████ 100%
    └─ Documentação completa ✅
    └─ Migration 002 criada ✅
    └─ Migration 002 aplicada ✅
    └─ Migration 003 criada ✅
    └─ Migration 003 aplicada ✅
-   └─ Entidades implementadas ⏳
+   └─ Entidades implementadas ✅
+   └─ Repositories implementados ✅
 
 ════════════════════════════════════════════════════════════
 FASES PENDENTES (11/14 - 78.6%)
@@ -70,7 +74,10 @@ FASES PENDENTES (11/14 - 78.6%)
 🔜 Fase 4: Módulo Auth (/auth)           ░░░░░░░░░░░░░░░░░░░░   0%
    Fase 5: Integração Stripe Base        ░░░░░░░░░░░░░░░░░░░░   0%
    Fase 6: Módulo Usuários               ░░░░░░░░░░░░░░░░░░░░   0%
-⭐ Fase 7: Módulo Products + Prices      ░░░░░░░░░░░░░░░░░░░░   0%
+⭐ Fase 7: Módulo Products + Prices      ██████████░░░░░░░░░░  50%
+   └─ Entidades (Organization, Product, Price, Order) ✅
+   └─ Repositories com queries customizadas ✅
+   └─ Services (próximo) ⏳
    Fase 8: Checkout Híbrido              ░░░░░░░░░░░░░░░░░░░░   0%
    Fase 9: Portal do Cliente             ░░░░░░░░░░░░░░░░░░░░   0%
 ⭐ Fase 10: Webhooks Inteligentes        ░░░░░░░░░░░░░░░░░░░░   0%
@@ -136,13 +143,19 @@ FASES PENDENTES (11/14 - 78.6%)
    - **Resultado:** 4 novas tabelas criadas (organizations, products, prices, orders)
    - **Documento:** [MIGRATION-003-GUIA.md](./MIGRATION-003-GUIA.md)
 
-### 🟡 Bloqueadores Moderados
+### ✅ Bloqueadores Resolvidos Recentemente (continuação)
 
-4. **Entidades Java Não Implementadas**
-   - **Impacto:** Código Java ainda não reflete nova arquitetura
-   - **Solução:** Criar Organization.java, Product.java, Price.java, Order.java
-   - **Status:** Aguardando aplicação da Migration 003
+4. **Entidades Java Implementadas ✅**
+   - **Status:** 4 entidades criadas com todas as anotações JPA
+   - **Arquivos:** Organization.java, Product.java, Price.java, Order.java (~912 linhas)
+   - **Data:** 2025-10-06
    - **Documento:** [17-ARQUITETURA-HIBRIDA.md](./17-ARQUITETURA-HIBRIDA.md)
+
+5. **Repositories Implementados ✅**
+   - **Status:** 4 repositories criados com queries customizadas
+   - **Arquivos:** OrganizationRepository, ProductRepository, PriceRepository, OrderRepository (~409 linhas)
+   - **Features:** JOIN FETCH, aggregations, custom queries
+   - **Data:** 2025-10-06
 
 ---
 
