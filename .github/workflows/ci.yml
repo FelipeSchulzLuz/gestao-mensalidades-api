@@ -145,8 +145,16 @@ jobs:
       - name: 📤 Upload Security Results to GitHub Security
         uses: github/codeql-action/upload-sarif@v3
         if: always()
+        continue-on-error: true
         with:
           sarif_file: 'trivy-results.sarif'
+
+      - name: "📦 Fallback: Upload Trivy SARIF as artifact"
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-results-sarif
+          path: trivy-results.sarif
       
       - name: 📊 SonarCloud Scan (Optional)
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'

@@ -83,9 +83,17 @@ jobs:
       - name: 📤 Upload Trivy Results to GitHub Security
         uses: github/codeql-action/upload-sarif@v3
         if: always()
+        continue-on-error: true
         with:
           sarif_file: 'trivy-fs-results.sarif'
           category: 'trivy-filesystem'
+
+      - name: "📦 Fallback: Upload Trivy FS SARIF as artifact"
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-fs-results-sarif
+          path: trivy-fs-results.sarif
       
       - name: 📊 Generate Trivy Report
         uses: aquasecurity/trivy-action@master
@@ -139,9 +147,17 @@ jobs:
       - name: 📤 Upload Docker Scan Results to GitHub Security
         uses: github/codeql-action/upload-sarif@v3
         if: always()
+        continue-on-error: true
         with:
           sarif_file: 'trivy-docker-results.sarif'
           category: 'trivy-docker-image'
+
+      - name: "📦 Fallback: Upload Trivy Docker SARIF as artifact"
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-docker-results-sarif
+          path: trivy-docker-results.sarif
       
       - name: 🔍 Scan with Docker Scout (if available)
         if: github.event_name == 'push'
