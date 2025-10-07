@@ -133,6 +133,8 @@ jobs:
       - name: 🔍 Dependency Check (OWASP)
         run: ./gradlew dependencyCheckAnalyze --no-daemon
         continue-on-error: true
+        env:
+          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
       
       - name: 🔒 Security Scan (Trivy)
         uses: aquasecurity/trivy-action@master
