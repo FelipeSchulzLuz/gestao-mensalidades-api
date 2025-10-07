@@ -73,6 +73,13 @@ logs/
 *.log
 *.log.*
 
+# Sonar Scanner artifacts
+.scannerwork/
+sonar-scanner-output.log
+sonar-local-output.log
+sonar-gradle-output.log
+sonar-*.log
+
 ### SSL Certificates ###
 *.p12
 *.jks
