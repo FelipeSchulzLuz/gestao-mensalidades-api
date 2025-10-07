@@ -1,50 +1,100 @@
 version: 2
 updates:
-  # GitHub Actions workflows
+  # ===================================
+  # GitHub Actions Workflows
+  # ===================================
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
       day: "monday"
       time: "09:00"
+      timezone: "America/Sao_Paulo"
     open-pull-requests-limit: 5
     labels:
       - "dependencies"
       - "github-actions"
+      - "automated"
     commit-message:
       prefix: "chore"
       include: "scope"
+    reviewers:
+      - "FelipeSchulzLuz"
+    assignees:
+      - "FelipeSchulzLuz"
 
-  # Gradle dependencies
+  # ===================================
+  # Gradle Dependencies
+  # ===================================
   - package-ecosystem: "gradle"
     directory: "/"
     schedule:
       interval: "weekly"
       day: "monday"
       time: "09:00"
+      timezone: "America/Sao_Paulo"
     open-pull-requests-limit: 10
     labels:
       - "dependencies"
       - "java"
+      - "automated"
     commit-message:
       prefix: "chore"
       include: "scope"
+    reviewers:
+      - "FelipeSchulzLuz"
+    assignees:
+      - "FelipeSchulzLuz"
     ignore:
-      # Ignore major Spring Boot updates (manual review)
+      # Ignore major Spring Boot updates (manual review required)
       - dependency-name: "org.springframework.boot:*"
         update-types: ["version-update:semver-major"]
+      # Ignore major Jakarta updates (breaking changes)
+      - dependency-name: "jakarta.*:*"
+        update-types: ["version-update:semver-major"]
+    # Group minor and patch updates together
+    groups:
+      spring-framework:
+        patterns:
+          - "org.springframework*"
+        update-types:
+          - "minor"
+          - "patch"
+      testing:
+        patterns:
+          - "org.junit*"
+          - "org.mockito*"
+          - "org.assertj*"
+        update-types:
+          - "minor"
+          - "patch"
+      security:
+        patterns:
+          - "io.jsonwebtoken*"
+          - "com.google.firebase*"
+        update-types:
+          - "minor"
+          - "patch"
 
-  # Docker
+  # ===================================
+  # Docker Base Images
+  # ===================================
   - package-ecosystem: "docker"
     directory: "/"
     schedule:
       interval: "weekly"
       day: "monday"
       time: "09:00"
+      timezone: "America/Sao_Paulo"
     open-pull-requests-limit: 5
     labels:
       - "dependencies"
       - "docker"
+      - "automated"
     commit-message:
       prefix: "chore"
       include: "scope"
+    reviewers:
+      - "FelipeSchulzLuz"
+    assignees:
+      - "FelipeSchulzLuz"
