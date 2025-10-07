@@ -1,10 +1,6 @@
 name: Security Scanning
 
 on:
-  push:
-    branches: [ master, develop ]
-  pull_request:
-    branches: [ master, develop ]
   schedule:
     # Executar scan de segurança toda segunda às 3h AM
     - cron: '0 3 * * 1'
@@ -14,8 +10,6 @@ permissions:
   contents: read
   security-events: write
   pull-requests: write
-  actions: read
-  checks: write
 
 jobs:
   # ===================================
@@ -67,6 +61,11 @@ jobs:
   trivy-scan:
     name: Trivy Security Scan
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+      checks: write
     
     steps:
       - name: 📥 Checkout Code
@@ -84,7 +83,7 @@ jobs:
       
       - name: 📤 Upload Trivy Results to GitHub Security
         uses: github/codeql-action/upload-sarif@v3
-        if: always()
+        if: always() && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
         continue-on-error: true
         with:
           sarif_file: 'trivy-fs-results.sarif'
@@ -148,7 +147,7 @@ jobs:
       
       - name: 📤 Upload Docker Scan Results to GitHub Security
         uses: github/codeql-action/upload-sarif@v3
-        if: always()
+        if: always() && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
         continue-on-error: true
         with:
           sarif_file: 'trivy-docker-results.sarif'
