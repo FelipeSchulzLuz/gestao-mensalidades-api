@@ -19,7 +19,7 @@ Uso em **servidor Linux** ou desenvolvimento local Linux/macOS. Recomendamos usa
 chmod +x scripts/*.sh
 
 # Uso recomendado (vai copiar .env, rodar flyway e iniciar a app)
-./scripts/run-make.sh start
+make start  # calls ./scripts/toolbox.sh start-with-flyway
 
 # Alternativa: executar passo a passo
 # 1) Preparar .env
@@ -77,6 +77,15 @@ chmod +x scripts/*.sh
 
 Use esse fluxo sempre que quiser uma maneira segura e reprodutível para dev/local.
 
+### Ajuda para mesclar templates
+
+Se você usa `cp .env.docker .env` como atalho mas quer garantir que todas as variáveis listadas em `.env.example` estejam presentes (com placeholders), use o script:
+
+```bash
+./scripts/merge_env_templates.sh    # dry-run, prints report
+./scripts/merge_env_templates.sh --apply   # actually writes .env with placeholders appended
+```
+
 ---
 
 ## Fluxo manual (passo-a-passo)
@@ -95,6 +104,9 @@ cp .env.docker .env
 ```bash
 docker compose up -d postgres redis pgadmin
 ```
+
+Nota sobre portas: por padrão o `docker-compose.yml` expõe `pgadmin` na porta 18080 e a `app` na porta 10080. Esses são os valores padrão do repositório e não dependem de variáveis externas.
+
 
 3) Rodar migrations (usando o serviço `flyway` definido no `docker-compose.yml`)
 
@@ -206,6 +218,124 @@ docker compose logs -f postgres
 
 - Este README tem como objetivo ser uma referência prática: comandos copy/paste, verificação e ações de recuperação.
 - Se quiser, posso também criar exemplos de comandos para o CI (GitHub Actions/GitLab CI) que usem `make ci-migrate`.
+ 
+## Guia rápido (desenvolvimento)
+
+Pequeno resumo prático para começar rapidamente — equivalente ao `USAGE.md` mas focado em scripts e fluxo local.
+
+1) Copiar template de env e ajustar localmente (NÃO commitar `.env`):
+
+```bash
+cp .env.docker .env
+# Edite .env se necessário (DB host, ports, secrets)
+```
+
+2) Tornar scripts executáveis (apenas 1x):
+
+```bash
+chmod +x scripts/*.sh
+```
+
+3) Subir infra e app (fluxo recomendado):
+
+```bash
+# wrapper que chama Makefile e executa Flyway
+./scripts/run-make.sh start
+```
+
+Ou com o toolbox helper:
+
+```bash
+./scripts/toolbox.sh start-with-flyway
+```
+
+4) Logs da app:
+
+```bash
+docker compose logs -f app
+```
+
+Se você precisa garantir que todas as chaves de `.env.example` existam no `.env` local, use o utilitário:
+
+```bash
+./scripts/merge_env_templates.sh    # dry-run, prints report
+./scripts/merge_env_templates.sh --apply   # actually writes .env with placeholders/mappings
+```
+
+## 🧰 Guia rápido: `scripts/toolbox.sh`
+
+Este repositório agora inclui um utilitário consolidado `scripts/toolbox.sh` que reúne as operações mais comuns (secrets, DB, helpers). A ideia é ter um ponto único, interativo e seguro para executar tarefas administrativas locais e de preparação de CI.
+
+Observações rápidas:
+- Os comandos abaixo assumem que você está na raiz do repositório.
+- Torne o script executável uma vez: `chmod +x scripts/toolbox.sh`
+- O `toolbox.sh` combina funcionalidades antigas (import de envs para secrets, prompts interativos e operações de banco). Ele NÃO armazena valores sensíveis no repositório.
+
+### Subcomandos principais
+
+- `secrets:prompt`
+	- Fluxo interativo para definir os secrets faltantes (DOCKER_USERNAME, DOCKER_PASSWORD, SONAR_TOKEN, SECURITY_UPLOAD_TOKEN, NVD_API_KEY, entre outros).
+	- Usa `gh` (GitHub CLI). Se não tiver `gh` instalado/autenticado, o script avisa e imprime instruções de como prosseguir.
+
+- `secrets:import`
+	- Analisa `.env.docker`, `.env` e alguns arquivos de docs para sugerir pares chave/valor que podem virar secrets.
+	- Mostra um resumo e pede confirmação antes de criar secrets com `gh secret set`.
+
+- `db:apply-migration`
+	- Executa as migrations no ambiente dockerizado (chama o serviço `flyway` do `docker-compose` ou usa o Makefile equivalente).
+
+- `db:recreate`
+	- Recria o banco de desenvolvimento (oper ação destrutiva — use com cuidado). Mantido por compatibilidade com o fluxo antigo.
+
+- `start-with-flyway`
+	- Copia `.env.docker` para `.env` (se necessário), sobe a infra mínima e garante que as migrations rodem antes de iniciar a app.
+
+- `run-make` ou outros aliases
+	- Helpers que chamam `make`/wrappers presentes no repositório.
+
+### Exemplos de uso
+
+1) Preparar ambiente e rodar a app com flyway (fluxo rápido):
+
+```bash
+chmod +x scripts/toolbox.sh
+./scripts/toolbox.sh start-with-flyway
+```
+
+2) Executar import interativo de secrets (útil ao provisionar um repositório pela primeira vez):
+
+```bash
+./scripts/toolbox.sh secrets:import
+```
+
+3) Prompt para preencher secrets sensíveis manualmente (recomendada para tokens):
+
+```bash
+./scripts/toolbox.sh secrets:prompt
+```
+
+### Segurança e boas práticas para secrets
+
+- Nunca insira valores sensíveis diretamente em arquivos versionados. Utilize `.env` local (não comitado) e GitHub Secrets para CI.
+- Para o upload SARIF/segurança do GitHub, o workflow pode exigir um token com a permissão `Security events: Write`. Nome recomendado do secret: `SECURITY_UPLOAD_TOKEN`.
+- `SONAR_TOKEN` é usado pelo fluxo opcional do SonarCloud; prefira colocá-lo como secret (já adicionado se você forneceu o valor).
+- `NVD_API_KEY` reduz a chance de erro 403 em `dependency-check`; se não houver, a análise ainda pode falhar devido às restrições da NVD.
+
+### Requisitos do ambiente para usar o toolbox
+
+- `gh` (GitHub CLI) instalado e autenticado para operações automáticas com secrets.
+- `docker` e `docker compose` para operações com banco/infra.
+- Permissão de execução para os scripts (chmod +x). 
+
+### Como prosseguir se `gh` não estiver instalado
+
+O `toolbox.sh` detecta a ausência do `gh` e imprime instruções interativas. Se preferir configurar secrets manualmente via UI do GitHub, use a seção `GITHUB_ACTIONS_SECRETS.md` no repositório.
+
+### Logs e auditoria
+
+O script é deliberadamente verboso nas operações de secrets (mostra quais chaves vai criar, mas não imprime valores sensíveis). Para auditoria, verifique o histórico de Actions/Secrets no GitHub e os logs locais do `toolbox.sh`.
+
+---
 
 ``` 
 git clone ...
