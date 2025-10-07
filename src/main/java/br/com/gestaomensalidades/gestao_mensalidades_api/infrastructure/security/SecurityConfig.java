@@ -90,6 +90,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/plans").permitAll()
                         .requestMatchers("/api/webhooks/stripe").permitAll()
+                        .requestMatchers("/api/actuator/health").permitAll() // Health check para Docker
                         
                         // Rotas administrativas (requer role ADMIN)
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
