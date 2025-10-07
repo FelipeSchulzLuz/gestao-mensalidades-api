@@ -1,0 +1,23 @@
+name: Java setup
+description: Setup Java toolchain and prepare Gradle wrapper
+inputs:
+  java-version:
+    description: 'Java version'
+    required: false
+    default: '21'
+  cache:
+    description: 'Cache type'
+    required: false
+    default: 'gradle'
+runs:
+  using: 'composite'
+  steps:
+    - name: ☕ Setup Java
+      uses: actions/setup-java@v5
+      with:
+        distribution: 'temurin'
+        java-version: ${{ inputs.java-version }}
+        cache: ${{ inputs.cache }}
+
+    - name: 🔧 Make gradlew executable
+      run: chmod +x gradlew || true

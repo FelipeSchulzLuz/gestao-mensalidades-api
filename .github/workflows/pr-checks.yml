@@ -82,6 +82,11 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: ☕ Setup Java (post checks)
+        uses: ./.github/actions/java-setup
+        with:
+          java-version: '21'
+
       - name: 🔍 Run Checkstyle
         run: ./gradlew checkstyleMain --no-daemon
         continue-on-error: true
