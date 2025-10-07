@@ -108,6 +108,73 @@ jobs:
       - name: 🔎 SpotBugs Analysis
         run: ./gradlew spotbugsMain --no-daemon
         continue-on-error: true
+  
+  # ===================================
+  # Job Y: SonarCloud Quality Gate (PR)
+  # ===================================
+  sonar-quality-gate:
+    name: SonarCloud Quality Gate
+    runs-on: ubuntu-latest
+    needs: auto-review
+    if: secrets.SONAR_TOKEN != ''
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: ☕ Setup utils
+        run: |
+          sudo apt-get update && sudo apt-get install -y jq curl || true
+
+      - name: ▶️ Wait for SonarCloud Quality Gate
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_PROJECT_KEY: FelipeSchulzLuz_gestao-mensalidades-api
+          PR_NUMBER: ${{ github.event.number }}
+        run: |
+          echo "Checking SonarCloud Quality Gate for PR #${PR_NUMBER}..."
+          API_URL="https://sonarcloud.io/api/qualitygates/project_status?projectKey=${SONAR_PROJECT_KEY}&pullRequest=${PR_NUMBER}"
+
+          attempts=0
+          max_attempts=30
+          delay=10
+
+          while [ $attempts -lt $max_attempts ]; do
+            attempts=$((attempts+1))
+            echo "Attempt $attempts/$max_attempts: querying SonarCloud..."
+            resp=$(curl -s -u ${SONAR_TOKEN}: "$API_URL") || resp=""
+
+            if [ -z "$resp" ]; then
+              echo "No response from SonarCloud API yet. Sleeping $delay seconds..."
+              sleep $delay
+              continue
+            fi
+
+            status=$(echo "$resp" | jq -r '.projectStatus.status // "UNKNOWN"')
+            echo "SonarCloud projectStatus.status = $status"
+
+            if [ "$status" = "OK" ]; then
+              echo "✅ SonarCloud Quality Gate PASSED"
+              exit 0
+            fi
+
+            if [ "$status" = "ERROR" ]; then
+              echo "❌ SonarCloud Quality Gate FAILED"
+              echo "Full response:"
+              echo "$resp"
+              exit 1
+            fi
+
+            # if status is NONE or WARN or UNKNOWN or still in progress, wait
+            echo "Status is $status — waiting $delay seconds before retrying..."
+            sleep $delay
+          done
+
+          echo "Timed out waiting for SonarCloud Quality Gate after $max_attempts attempts"
+          exit 1
+
+  # ===================================
   # ===================================
   # Job X: Scripts smoke test
   # ===================================
