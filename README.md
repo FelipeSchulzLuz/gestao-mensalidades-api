@@ -133,15 +133,15 @@ BACKEND CORE: ████████████████████░ 80
 
 ```
 gestao-mensalidades-api/
-├── docs/                          # 📚 Documentação completa (14 arquivos)
-│   ├── INDEX.md                  # Índice principal
-│   ├── INICIO-RAPIDO.md          # Guia de início rápido
-│   ├── ARQUITETURA.md            # Clean Architecture
-│   ├── ARQUITETURA-HIBRIDA.md    # Products + Prices (modelo atual)
-│   ├── DOCKER.md                 # Guia Docker
+├── docs/                          # 📚 Documentação essencial (8 arquivos)
+│   ├── INICIO-RAPIDO.md          # Setup completo do ambiente
+│   ├── DOCKER.md                 # Infraestrutura Docker
+│   ├── DEPLOY-SERVIDOR.md        # Deploy em produção
+│   ├── ARQUITETURA-HIBRIDA.md    # Clean Architecture + Products/Prices
 │   ├── STRIPE.md                 # Integração Stripe
 │   ├── JAKARTA-VALIDATIONS.md    # Validações Jakarta Bean
-│   └── PROJECT-STATUS.md         # Status do projeto (80% backend)
+│   ├── MIGRATIONS-BOAS-PRATICAS.md  # Database migrations
+│   └── CREDENCIAIS.md            # Credenciais (não commitado)
 │
 ├── src/main/java/.../
 │   ├── domain/                   # � Entidades (Organization, Product, Price, Order)

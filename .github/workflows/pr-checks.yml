@@ -70,7 +70,6 @@ jobs:
     name: Automated Code Review
     runs-on: ubuntu-latest
     needs: validate-pr
-    
     steps:
       - name: 📥 Checkout Code
         uses: actions/checkout@v5
@@ -100,7 +99,7 @@ jobs:
       - name: 📊 Comment PR with Coverage
         uses: madrapps/jacoco-report@v1.7.2
         with:
-          paths: ${{ github.workspace }}/build/reports/jacoco/test/jacocoTestReport.xml
+          paths: ${ { github.workspace } }/build/reports/jacoco/test/jacocoTestReport.xml
           token: ${{ secrets.GITHUB_TOKEN }}
           min-coverage-overall: 70
           min-coverage-changed-files: 80
@@ -109,6 +108,25 @@ jobs:
       - name: 🔎 SpotBugs Analysis
         run: ./gradlew spotbugsMain --no-daemon
         continue-on-error: true
+  # ===================================
+  # Job X: Scripts smoke test
+  # ===================================
+  scripts-smoke:
+    name: Scripts Smoke Test
+    runs-on: ubuntu-latest
+    needs: validate-pr
+
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v5
+
+      - name: 🔧 Ensure scripts executable
+        run: chmod +x scripts/*.sh || true
+
+      - name: 🧪 Toolbox dry-run (merge-env)
+        run: |
+          # Run dry-run merge to ensure toolbox and merge script are present and runnable
+          ./scripts/toolbox.sh merge-env || (echo "Toolbox smoke test failed" && exit 1)
 
   # ===================================
   # Job 3: Documentation Check

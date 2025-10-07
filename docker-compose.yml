@@ -46,8 +46,9 @@ services:
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin123}
       PGADMIN_CONFIG_SERVER_MODE: 'False'
       PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
+    # Host port for pgAdmin (default: 8800)
     ports:
-      - "8800:80"  # Porta externa: 8800 (não convencional)
+      - "18080:80"  # Porta externa: 18080 (moved to avoid local conflicts)
     volumes:
       - pgadmin_data:/var/lib/pgadmin
       - ./docker/pgadmin/servers.json:/pgadmin4/servers.json:ro
@@ -92,7 +93,7 @@ services:
       DB_HOST: postgres
       DB_PORT: 5432
       DB_NAME: gestao_mensalidades_dev
-      DB_USER: gestao_app_user
+      DB_USERNAME: gestao_app_user
       DB_PASSWORD: ${DB_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
       STRIPE_API_KEY: ${STRIPE_API_KEY}
@@ -100,8 +101,11 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: 6379
       REDIS_PASSWORD: ${REDIS_PASSWORD}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:3000}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3000}
+    # Host port for the application (default: 8081)
     ports:
-      - "8800:8080"  # Porta externa: 8800 (não convencional)
+      - "10080:8080"  # Porta externa: 10080 (avoids common dev ports like 8080/8081)
     networks:
       - gestao-network
     depends_on:
@@ -118,7 +122,7 @@ services:
 
   # Flyway - executar migrations antes da aplicação
   flyway:
-    image: flyway/flyway:9
+    image: flyway/flyway:11
     container_name: gestao-flyway
     environment:
       FLYWAY_PLACEHOLDERS_DB_NAME: gestao_mensalidades_dev

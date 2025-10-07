@@ -57,6 +57,11 @@ application-local.properties
 *-secret.yml
 *-secret.properties
 
+# Firebase Service Account Keys (NUNCA COMMITAR!)
+*firebase*.json
+serviceAccountKey.json
+*adminsdk*.json
+
 ### Logs ###
 logs/
 *.log

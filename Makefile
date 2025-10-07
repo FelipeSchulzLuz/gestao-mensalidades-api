@@ -14,7 +14,7 @@ help:
 	@echo "  clean            Remove generated .env (if created by the Makefile)"
 
 start: ## Copy .env and run migrations + app
-	@./scripts/start-with-flyway.sh
+	@./scripts/toolbox.sh start-with-flyway
 
 apply-migrations: ## Run flyway migrate via docker compose
 	@echo "Running Flyway migrations..."
