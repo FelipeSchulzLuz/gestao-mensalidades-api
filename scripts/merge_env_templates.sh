@@ -2,15 +2,16 @@
 set -euo pipefail
 
 # scripts/merge_env_templates.sh
-# Merge .env.docker into .env and append placeholders for keys present in .env.example but
+# Merge .env.docker.example into .env and append placeholders for keys present in .env.example but
 # missing in .env. Safe defaults: dry-run mode, report, optional --apply to write file.
+# NOTE: This now uses .env.docker.example (the safe template) as source.
 
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$REPO_ROOT"
 
 DRY_RUN=true
 OUTPUT_FILE=".env"
-SOURCE_FILE=".env.docker"
+SOURCE_FILE=".env.docker.example"
 EXAMPLE_FILE=".env.example"
 
 usage() {

@@ -13,9 +13,9 @@ Quick helper for repository maintenance — secrets, DB and CI prep.
 
 Commands:
   start                Alias for start-with-flyway (recommended quick-start)
-  start-with-flyway    Copy .env.docker->.env (unless exists), bring up infra and run Flyway
+  start-with-flyway    Copy .env.docker->.env (creates from .env.docker.example if needed)
   secrets:prompt       Interactive prompt to set missing GitHub Actions secrets (uses gh)
-  secrets:import       Scan .env.docker/.env/docs and import suggested secrets (interactive)
+  secrets:import       Scan .env files and import suggested secrets (interactive)
   db:apply-migration   Apply Flyway migration (uses docker-compose / Makefile)
   db:recreate          Recreate the development database (DESTRUCTIVE)
   merge-env            Merge .env templates (.env.docker + .env.example) into .env (dry-run by default)
@@ -116,9 +116,18 @@ cmd_start_with_flyway() {
     echo "start-with-flyway.sh not found. Running embedded fallback: prepare .env, start infra, run flyway, and start app."
 
     # Copy .env template if no .env exists
-    if [[ -f "${REPO_ROOT}/.env.docker" && ! -f "${REPO_ROOT}/.env" ]]; then
-      cp "${REPO_ROOT}/.env.docker" "${REPO_ROOT}/.env"
-      echo "Copied .env.docker -> .env"
+    if [[ ! -f "${REPO_ROOT}/.env" ]]; then
+      if [[ -f "${REPO_ROOT}/.env.docker" ]]; then
+        cp "${REPO_ROOT}/.env.docker" "${REPO_ROOT}/.env"
+        echo "Copied .env.docker -> .env"
+      elif [[ -f "${REPO_ROOT}/.env.docker.example" ]]; then
+        echo "⚠️  .env.docker not found. Creating from template..."
+        cp "${REPO_ROOT}/.env.docker.example" "${REPO_ROOT}/.env.docker"
+        cp "${REPO_ROOT}/.env.docker" "${REPO_ROOT}/.env"
+        echo "⚠️  IMPORTANT: Edit .env.docker with REAL values before running!"
+        echo "⚠️  Template has placeholder values that won't work."
+        exit 1
+      fi
     fi
 
     echo "Bringing up infra services (postgres, redis, pgadmin)..."

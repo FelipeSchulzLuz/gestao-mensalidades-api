@@ -33,13 +33,16 @@ docker compose version
 ### 1. Criar arquivo de variáveis de ambiente
 
 ```bash
-# Copiar template
+# Copiar template (agora com valores placeholder seguros)
+cp .env.docker.example .env.docker
 cp .env.docker .env
 
-# Editar com seus valores (IMPORTANTE!)
-notepad .env  # Windows
+# Editar .env.docker e .env com valores REAIS (IMPORTANTE!)
+notepad .env.docker  # Windows
 # ou
-nano .env     # Linux/Mac
+nano .env.docker     # Linux/Mac
+
+# NUNCA commite .env.docker ou .env no Git!
 ```
 
 ### 2. Gerar senhas seguras

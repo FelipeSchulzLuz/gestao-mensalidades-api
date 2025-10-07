@@ -37,11 +37,17 @@ out/
 .vscode/
 
 ### Environment Variables ###
-# Environment
+# Environment files (NUNCA COMMITAR!)
 .env
 .env.*
+.env.local
+.env.production
+.env.development
+.env.docker
+
+# Apenas templates são permitidos
 !.env.example
-!.env.docker
+!.env.docker.example
 
 # Credenciais (NUNCA COMMITAR!)
 docs/11-CREDENCIAIS.md

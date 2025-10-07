@@ -7,8 +7,10 @@ This file is a short onboarding guide for developers and CI operators. It consol
 1. Copy environment template and edit values locally (never commit `.env`):
 
 ```bash
+cp .env.docker.example .env.docker
 cp .env.docker .env
-# Edit .env if needed (DB host, ports, secrets)
+# Edit .env with REAL values (DB host, ports, secrets)
+# NEVER commit .env or .env.docker to Git!
 ```
 
 2. Make scripts executable (once):

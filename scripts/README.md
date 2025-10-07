@@ -22,8 +22,10 @@ chmod +x scripts/*.sh
 make start  # calls ./scripts/toolbox.sh start-with-flyway
 
 # Alternativa: executar passo a passo
-# 1) Preparar .env
+# 1) Preparar .env (copiar template com placeholders)
+cp .env.docker.example .env.docker
 cp .env.docker .env
+# Edite .env.docker com valores REAIS antes de continuar!
 # 2) Subir infra mínima
 docker compose up -d postgres redis pgadmin
 # 3) Rodar migrations via Flyway
@@ -52,7 +54,10 @@ Objetivo deste documento: remover ambiguidade e fornecer passos exatos, copy/pas
 Certifique-se de ter copiado o template de variáveis de ambiente antes de iniciar:
 
 ```bash
-cp .env.docker .env    # revisão manual recomendada antes de subir em produção
+cp .env.docker.example .env.docker    # copia template
+cp .env.docker .env                    # copia para uso local
+# ⚠️  EDITE .env.docker com valores REAIS antes de subir!
+# NUNCA commite .env.docker no Git!
 ```
 
 ---
