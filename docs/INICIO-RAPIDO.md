@@ -48,7 +48,7 @@ Recomendado: use o wrapper padronizado que invoca o Makefile para copiar `.env`,
 chmod +x scripts/*.sh
 
 # Fluxo recomendado (rápido e reprodutível)
-./scripts/run-make.sh start
+make start  # equivalent to ./scripts/toolbox.sh start-with-flyway
 ```
 
 O wrapper faz (resumo):
@@ -71,10 +71,7 @@ Se precisar executar manualmente, veja a seção "Fluxo manual" no final deste d
 Em um **terminal separado** na sua máquina local:
 
 ```bash
-# Se tiver o script wrapper local (scripts/start-stripe.sh)
-./scripts/start-stripe.sh
-
-# Ou manualmente com Stripe CLI
+# Use Stripe CLI to forward webhooks (recommended)
 stripe listen --forward-to localhost:8800/api/webhooks/stripe
 ```
 
@@ -204,10 +201,7 @@ docker compose down
 # Login no Stripe
 stripe login
 
-# Iniciar listener (script wrapper)
-./scripts/start-stripe.sh
-
-# Iniciar listener (manual)
+# Iniciar listener (use Stripe CLI directly)
 stripe listen --forward-to localhost:8800/api/webhooks/stripe
 
 # Testar eventos
@@ -307,7 +301,7 @@ taskkill /PID <PID> /F
 ## 🎯 Workflow Típico de Desenvolvimento
 
 ### Início do Dia
-1. ✅ Iniciar ambiente: `./scripts/run-make.sh start`
+1. ✅ Iniciar ambiente: `make start` (or `./scripts/toolbox.sh start-with-flyway`)
 2. ✅ Iniciar Stripe: `stripe listen --forward-to localhost:8800/api/webhooks/stripe` (terminal separado)
 3. ✅ Começar a codificar! (app já está rodando via wrapper)
 

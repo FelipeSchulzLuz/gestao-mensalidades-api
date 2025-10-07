@@ -39,9 +39,8 @@ gestao-mensalidades-api/
 
 ```
 ✅ scripts/*.sh                    ← Scripts Bash para servidor Linux
-   - recreate-database.sh
-   - apply-migration-existing-db.sh
-   - apply-migration-docker.sh
+  - NOTE: legacy helper scripts were consolidated into `scripts/toolbox.sh`.
+  - Use `./scripts/toolbox.sh` or the Makefile targets on the server to run these tasks.
 ```
 
 ---
@@ -187,12 +186,16 @@ chmod +x scripts/*.sh
 
 **Opção A: Database limpo (recomendado primeira vez)**
 ```bash
-./scripts/recreate-database.sh
+# Recreate DB via toolbox or manually using docker-compose
+./scripts/toolbox.sh db:recreate
 ```
 
 **Opção B: Database existente**
 ```bash
-./scripts/apply-migration-existing-db.sh
+# Run Flyway migrations via Makefile or docker-compose
+make apply-migrations
+# or
+docker compose run --rm flyway
 ```
 
 ### 8️⃣ Iniciar Aplicação

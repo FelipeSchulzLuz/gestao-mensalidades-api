@@ -360,7 +360,7 @@ Opções:
 chmod +x scripts/*.sh
 
 # Fluxo padronizado (copia .env, sobe infra mínima, aplica migrations e sobe app)
-./scripts/run-make.sh start
+make start  # equivalent to ./scripts/toolbox.sh start-with-flyway
 ```
 
 - Executar `flyway` diretamente:
@@ -496,7 +496,8 @@ Get-ChildItem $BackupDir -Filter "backup_*.sql" | Where-Object { $_.LastWriteTim
 
 ```bash
 # Linux - crontab -e
-0 2 * * * cd /caminho/para/projeto && ./backup.sh
+# NOTE: create your backup script (e.g. scripts/backup.sh) before scheduling. Example:
+# 0 2 * * * cd /caminho/para/projeto && ./scripts/backup.sh
 ```
 
 ### Restaurar backup

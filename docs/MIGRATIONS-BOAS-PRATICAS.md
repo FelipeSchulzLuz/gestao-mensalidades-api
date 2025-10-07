@@ -53,7 +53,7 @@ Dev 2: "Oi, o que você mudou no banco?"
 Dev 1: git add src/main/resources/db/migration/V002__*.sql
 Dev 1: git push
 Dev 2: git pull
-Dev 2: ./scripts/run-make.sh start
+Dev 2: make start  # equivalent to ./scripts/toolbox.sh start-with-flyway
 ✅ FUNCIONA!
 ```
 
@@ -133,7 +133,7 @@ git commit -m "feat: add phone column to users"
 git push
 
 # 3. Aplicar localmente
-./scripts/run-make.sh start
+make start
 
 # 4. Atualizar código Java
 # User.java → private String phone;
@@ -167,7 +167,7 @@ git commit -m "feat: add Firebase authentication support - migration 002"
 
 # 2. Aplicar localmente (recriar DB + migrations)
 docker compose down -v
-./scripts/run-make.sh start
+make start
 # ✅ Rápido (cria DB limpo e aplica todas migrations)
 # ✅ Estado limpo garantido
 
@@ -198,7 +198,7 @@ git push
 
 **COM Migrations:**
 ```
-✅ Novo dev: git clone → ./scripts/run-make.sh start → pronto!
+✅ Novo dev: git clone → make start (or ./scripts/toolbox.sh start-with-flyway) → pronto!
 ✅ Staging: Sempre sincronizado
 ✅ Produção: Deploy previsível
 ✅ Documentação: Cada migration explica
@@ -213,7 +213,7 @@ git push
 **✅ COM migrations:**
 ```bash
 docker compose down -v
-./scripts/run-make.sh start
+make start
 # ✅ Dropa tudo
 # ✅ Recria com TODAS migrations via Flyway
 # ✅ Estado consistente garantido
