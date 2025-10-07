@@ -74,11 +74,6 @@ public class SecurityConfig {
                 // Configurar CORS
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 
-                // Configurar tratamento de exceções
-                .exceptionHandling(exception -> exception
-                        .authenticationEntryPoint(unauthorizedHandler)
-                )
-                
                 // Configurar política de sessão (STATELESS para JWT)
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -91,12 +86,17 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/plans").permitAll()
                         .requestMatchers("/api/webhooks/stripe").permitAll()
                         .requestMatchers("/api/actuator/health").permitAll() // Health check para Docker
+                        .requestMatchers("/actuator/health").permitAll() // Health check sem /api (usado pelo Docker)
                         
                         // Rotas administrativas (requer role ADMIN)
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         
                         // Todas as outras rotas requerem autenticação
                         .anyRequest().authenticated()
+                )
+                
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(unauthorizedHandler)
                 );
         
         // Adicionar filtro unificado (JWT + Firebase) antes do filtro de autenticação padrão
