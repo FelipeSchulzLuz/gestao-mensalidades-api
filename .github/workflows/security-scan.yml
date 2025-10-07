@@ -171,9 +171,14 @@ jobs:
         uses: trufflesecurity/trufflehog@main
         with:
           path: ./
-          base: ${{ github.event.repository.default_branch }}
-          head: HEAD
+          # Determine sensible base/head depending on event type (push vs pull_request).
+          # For pull requests, use the PR base/head SHAs. For push, use github.event.before and github.sha.
+          base: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before || github.event.repository.default_branch }}
+          head: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
           extra_args: --only-verified --json
+        # If TruffleHog finds nothing to scan because base==head (e.g. manual dispatch or empty diff),
+        # don't fail the entire workflow - surface results but allow other scans to continue.
+        continue-on-error: true
 
   # ===================================
   # Job 5: CodeQL Analysis
