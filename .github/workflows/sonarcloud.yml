@@ -51,6 +51,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
+          set -o pipefail
+          echo "Running Sonar analysis via Gradle..."
           ./gradlew sonar --no-daemon \
             -Dsonar.projectKey=FelipeSchulzLuz_gestao-mensalidades-api \
             -Dsonar.organization=felipeschulzluz \
@@ -60,7 +62,18 @@ jobs:
             -Dsonar.junit.reportPaths=build/test-results/test \
             -Dsonar.java.binaries=build/classes/java/main \
             -Dsonar.exclusions=**/*Test.java,**/*Tests.java,**/test/**,**/build/** \
-            -Dsonar.coverage.exclusions=**/*Test.java,**/*Tests.java,**/test/**,**/application/**,**/config/**
+            -Dsonar.coverage.exclusions=**/*Test.java,**/*Tests.java,**/test/**,**/application/**,**/config/** 2>&1 | tee sonar-gradle-output.log
+          # If Sonar reports that Automatic Analysis is enabled, treat it as a warning, not a failure.
+          if grep -qi "automatic analysis" sonar-gradle-output.log || grep -qi "Automatic Analysis" sonar-gradle-output.log; then
+            echo "::warning::SonarCloud Automatic Analysis is enabled for this project. Gradle Sonar invocation skipped by SonarCloud. See SonarCloud project settings."
+            exit 0
+          fi
+          # If gradle failed for another reason, print the log and exit with failure.
+          if [ ${PIPESTATUS[0]} -ne 0 ]; then
+            echo "Gradle Sonar task failed. Full log:" >&2
+            cat sonar-gradle-output.log >&2
+            exit 1
+          fi
       
       - name: ⚠️ SonarCloud Token Not Configured
         if: env.SONAR_TOKEN == ''
