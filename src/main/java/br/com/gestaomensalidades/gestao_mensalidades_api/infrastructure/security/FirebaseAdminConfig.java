@@ -40,9 +40,9 @@ public class FirebaseAdminConfig {
      * Pode ser configurado via application.yml ou variável de ambiente.
      * 
      * Exemplo .env:
-     * FIREBASE_PRIVATE_KEY_PATH=serviceAccountKey.json
+     * FIREBASE_PRIVATE_KEY_PATH=subscriptions-dev-fsl-firebase-adminsdk-fbsvc-d43f1fdcdb.json
      */
-    @Value("${firebase.service-account-key:serviceAccountKey.json}")
+    @Value("${firebase.service-account-key:subscriptions-dev-fsl-firebase-adminsdk-fbsvc-d43f1fdcdb.json}")
     private String firebasePrivateKeyPath;
 
     /**
@@ -57,10 +57,11 @@ public class FirebaseAdminConfig {
      * O método verifica se já existe uma instância do FirebaseApp para evitar
      * inicialização dupla. Isso é importante em ambientes com hot-reload.
      * 
-     * @throws IOException se a service account key não for encontrada
+     * Se a service account key não for encontrada, loga um warning mas NÃO quebra a aplicação.
+     * Isso permite desenvolvimento sem Firebase configurado (usando apenas JWT).
      */
     @PostConstruct
-    public void initializeFirebase() throws IOException {
+    public void initializeFirebase() {
         if (FirebaseApp.getApps().isEmpty()) {
             log.info("Inicializando Firebase Admin SDK...");
             
@@ -78,12 +79,13 @@ public class FirebaseAdminConfig {
                 FirebaseOptions options = optionsBuilder.build();
                 FirebaseApp.initializeApp(options);
                 
-                log.info("Firebase Admin SDK inicializado com sucesso!");
+                log.info("✅ Firebase Admin SDK inicializado com sucesso!");
                 log.info("Project ID: {}", FirebaseApp.getInstance().getOptions().getProjectId());
             } catch (IOException e) {
-                log.error("Falha ao inicializar Firebase Admin SDK: {}", e.getMessage());
-                log.warn("Firebase não estará disponível. Apenas autenticação JWT funcionará.");
-                throw e;
+                log.warn("⚠️  Firebase Admin SDK não pôde ser inicializado: {}", e.getMessage());
+                log.warn("⚠️  Firebase Authentication não estará disponível.");
+                log.warn("⚠️  A aplicação funcionará apenas com autenticação JWT.");
+                log.info("💡 Para habilitar Firebase, adicione o arquivo: {}", firebasePrivateKeyPath);
             }
         } else {
             log.info("Firebase Admin SDK já estava inicializado.");
@@ -117,10 +119,22 @@ public class FirebaseAdminConfig {
      * Este bean pode ser injetado em qualquer componente Spring para
      * validação de tokens Firebase ID.
      * 
-     * @return instância do FirebaseAuth
+     * Retorna null se o Firebase não estiver inicializado (para evitar quebrar a aplicação).
+     * 
+     * @return instância do FirebaseAuth ou null se Firebase não estiver disponível
      */
     @Bean
     public FirebaseAuth firebaseAuth() {
-        return FirebaseAuth.getInstance();
+        try {
+            if (!FirebaseApp.getApps().isEmpty()) {
+                return FirebaseAuth.getInstance();
+            } else {
+                log.warn("FirebaseAuth bean criado como null - Firebase não está inicializado");
+                return null;
+            }
+        } catch (Exception e) {
+            log.warn("Não foi possível criar FirebaseAuth bean: {}", e.getMessage());
+            return null;
+        }
     }
 }

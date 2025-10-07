@@ -3,7 +3,6 @@ package br.com.gestaomensalidades.gestao_mensalidades_api.infrastructure.securit
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -29,19 +28,38 @@ import org.springframework.web.server.ResponseStatusException;
  */
 @Slf4j
 @Component
-@RequiredArgsConstructor
 public class FirebaseTokenProvider {
 
     private final FirebaseAuth firebaseAuth;
+    
+    /**
+     * Construtor com injeção opcional do FirebaseAuth.
+     * Se Firebase não estiver disponível, firebaseAuth será null.
+     */
+    public FirebaseTokenProvider(@org.springframework.beans.factory.annotation.Autowired(required = false) FirebaseAuth firebaseAuth) {
+        this.firebaseAuth = firebaseAuth;
+        if (firebaseAuth == null) {
+            log.warn("FirebaseTokenProvider criado sem FirebaseAuth - autenticação Firebase não disponível");
+        }
+    }
 
     /**
      * Valida um token Firebase ID.
      * 
      * @param idToken token Firebase ID recebido do frontend
      * @return FirebaseToken contendo informações do usuário
-     * @throws ResponseStatusException com status 401 se o token for inválido
+     * @throws ResponseStatusException com status 401 se o token for inválido ou Firebase não estiver disponível
      */
     public FirebaseToken validateToken(String idToken) {
+        // Verificar se Firebase está disponível
+        if (firebaseAuth == null) {
+            log.warn("Tentativa de validar token Firebase, mas Firebase não está inicializado");
+            throw new ResponseStatusException(
+                HttpStatus.SERVICE_UNAVAILABLE,
+                "Firebase Authentication não está disponível. Use autenticação JWT."
+            );
+        }
+        
         try {
             log.debug("Validando token Firebase...");
             FirebaseToken firebaseToken = firebaseAuth.verifyIdToken(idToken);
