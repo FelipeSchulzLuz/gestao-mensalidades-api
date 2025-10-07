@@ -205,8 +205,11 @@ management:
         include: health,info,metrics
   endpoint:
     health:
-      show-details: when-authorized
+      show-details: always  # Mudado de when-authorized para always (public endpoint)
   metrics:
     export:
       prometheus:
         enabled: false  # Habilitar se usar Prometheus
+  # Importante: desabilitar security do actuator para permitir acesso público ao health
+  security:
+    enabled: false

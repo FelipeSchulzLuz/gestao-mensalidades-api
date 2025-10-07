@@ -224,4 +224,37 @@ public class UnifiedAuthenticationFilter extends OncePerRequestFilter {
             log.debug("Usuário autenticado via Firebase: {} (email: {})", uid, firebaseToken.getEmail());
         }
     }
+    
+    /**
+     * Define quais rotas devem pular este filtro (rotas públicas).
+     * 
+     * Importante: Este método é chamado ANTES do doFilterInternal.
+     * Retornar true aqui significa que a requisição NÃO passará pelo filtro.
+     * 
+     * Rotas públicas:
+     * - /api/auth/** (login, register)
+     * - /api/webhooks/** (webhooks do Stripe)
+     * - /api/actuator/health (health check do Docker)
+     * 
+     * @param request requisição HTTP
+     * @return true se a requisição deve pular o filtro
+     */
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        
+        boolean shouldSkip = path.startsWith("/api/auth/") ||
+                           path.startsWith("/api/webhooks/") ||
+                           path.equals("/api/actuator/health") ||
+                           path.startsWith("/api/actuator/health/") ||
+                           path.equals("/actuator/health") ||            // Path sem /api também
+                           path.startsWith("/actuator/health/");         // Path sem /api também
+        
+        // Log para debug
+        if (path.contains("health") || path.contains("actuator")) {
+            log.info("shouldNotFilter - path: [{}], shouldSkip: {}", path, shouldSkip);
+        }
+        
+        return shouldSkip;
+    }
 }
