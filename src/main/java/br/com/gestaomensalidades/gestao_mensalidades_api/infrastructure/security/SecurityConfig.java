@@ -87,6 +87,13 @@ public class SecurityConfig {
                         .requestMatchers("/api/webhooks/stripe").permitAll()
                         .requestMatchers("/api/actuator/health").permitAll() // Health check para Docker
                         .requestMatchers("/actuator/health").permitAll() // Health check sem /api (usado pelo Docker)
+                        // Swagger / OpenAPI (springdoc) - permitir acesso público
+                        .requestMatchers("/api/swagger-ui.html").permitAll()
+                        .requestMatchers("/api/swagger-ui/**").permitAll()
+                        .requestMatchers("/api/v3/api-docs/**").permitAll()
+                        .requestMatchers("/swagger-ui.html").permitAll()
+                        .requestMatchers("/swagger-ui/**").permitAll()
+                        .requestMatchers("/v3/api-docs/**").permitAll()
                         
                         // Rotas administrativas (requer role ADMIN)
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")

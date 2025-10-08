@@ -5,6 +5,12 @@ import br.com.gestaomensalidades.gestao_mensalidades_api.application.dto.request
 import br.com.gestaomensalidades.gestao_mensalidades_api.application.dto.response.AuthResponseDTO;
 import br.com.gestaomensalidades.gestao_mensalidades_api.application.usecases.LoginUseCase;
 import br.com.gestaomensalidades.gestao_mensalidades_api.application.usecases.RegisterUserUseCase;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +33,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("/api/auth")
+@Tag(name = "Autenticação JWT", description = "Endpoints para autenticação usando email/senha (JWT próprio)")
 public class AuthController {
     
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
@@ -43,6 +50,30 @@ public class AuthController {
      * @param request Dados do usuário (nome, email, senha)
      * @return AuthResponseDTO com token JWT (201 Created)
      */
+    @Operation(
+        summary = "Registrar novo usuário",
+        description = "Cria uma nova conta de usuário com email e senha. Retorna um token JWT para autenticação."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "201",
+            description = "Usuário registrado com sucesso",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = AuthResponseDTO.class)
+            )
+        ),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Dados inválidos ou email já cadastrado",
+            content = @Content
+        ),
+        @ApiResponse(
+            responseCode = "500",
+            description = "Erro interno do servidor",
+            content = @Content
+        )
+    })
     @PostMapping("/register")
     public ResponseEntity<AuthResponseDTO> register(@Valid @RequestBody RegisterRequestDTO request) {
         logger.info("Requisição de registro recebida: {}", request.email());
@@ -58,6 +89,35 @@ public class AuthController {
      * @param request Credenciais do usuário (email, senha)
      * @return AuthResponseDTO com token JWT (200 OK)
      */
+    @Operation(
+        summary = "Fazer login",
+        description = "Autentica um usuário existente com email e senha. Retorna um token JWT válido."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Login realizado com sucesso",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = AuthResponseDTO.class)
+            )
+        ),
+        @ApiResponse(
+            responseCode = "401",
+            description = "Credenciais inválidas",
+            content = @Content
+        ),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Dados inválidos",
+            content = @Content
+        ),
+        @ApiResponse(
+            responseCode = "500",
+            description = "Erro interno do servidor",
+            content = @Content
+        )
+    })
     @PostMapping("/login")
     public ResponseEntity<AuthResponseDTO> login(@Valid @RequestBody LoginRequestDTO request) {
         logger.info("Requisição de login recebida: {}", request.email());

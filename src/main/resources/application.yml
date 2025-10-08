@@ -97,6 +97,22 @@ application:
   cors:
     allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000}
 
+# OpenAPI/Swagger Configuration (Dev)
+springdoc:
+  enabled: true
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+    operationsSorter: method
+    tagsSorter: alpha
+    displayRequestDuration: true
+    defaultModelsExpandDepth: 3
+    defaultModelExpandDepth: 3
+    tryItOutEnabled: true
+  show-actuator: false
+
 ---
 # ==================================
 # PRODUCTION PROFILE
@@ -213,3 +229,7 @@ management:
   # Importante: desabilitar security do actuator para permitir acesso público ao health
   security:
     enabled: false
+
+# Springdoc/OpenAPI configuration
+springdoc:
+  enabled: false
