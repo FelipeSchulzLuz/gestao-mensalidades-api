@@ -146,7 +146,7 @@ jobs:
           output: 'trivy-results.sarif'
       
       - name: 📤 Upload Security Results to GitHub Security
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         if: always() && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
         continue-on-error: true
         with:
