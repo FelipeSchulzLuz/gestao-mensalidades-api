@@ -3,7 +3,7 @@
 # =============================================================================
 
 # Stage 1: Build da aplicação com Gradle
-FROM gradle:9.1-jdk21-alpine AS builder
+FROM gradle:9.7-jdk21-alpine AS builder
 
 WORKDIR /app
 
